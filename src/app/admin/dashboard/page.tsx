@@ -1,9 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 
-interface AdminStats {
+interface User {
+  id: string;
+  name: string;
+  phone: string;
+  role: string;
+  createdAt: string;
+}
+
+interface Stats {
   users: number;
   drivers: number;
   trips: number;
@@ -11,21 +18,9 @@ interface AdminStats {
   revenue: number;
 }
 
-interface PendingSub {
-  id: string;
-  amount: number;
-  status: string;
-  createdAt: string;
-  driver: {
-    id: string;
-    subscriptionStatus: string;
-    user: { name: string; phone: string };
-  };
-}
-
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [pendingSubs, setPendingSubs] = useState<PendingSub[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,7 +30,7 @@ export default function AdminDashboardPage() {
         if (res.ok) {
           const data = await res.json();
           setStats(data.stats);
-          setPendingSubs(data.pendingSubscriptions || []);
+          setPendingUsers(data.pendingUsers || []);
         }
       } catch {}
       setLoading(false);
@@ -43,100 +38,219 @@ export default function AdminDashboardPage() {
     load();
   }, []);
 
-  async function approveSubscription(subscriptionId: string, driverId: string) {
+  async function approveUser(userId: string, role: string) {
     try {
-      await fetch(`/api/admin/subscriptions/${subscriptionId}/approve`, {
+      await fetch(`/api/admin/users/${userId}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ driverId }),
+        body: JSON.stringify({ role }),
       });
-      setPendingSubs((prev) => prev.filter((s) => s.id !== subscriptionId));
-      window.location.reload();
+      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
     } catch {}
   }
 
+  async function rejectUser(userId: string) {
+    try {
+      await fetch(`/api/admin/users/${userId}/reject`, { method: "POST" });
+      setPendingUsers((prev) => prev.filter((u) => u.id !== userId));
+    } catch {}
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64 text-on-surface-variant">
+        جاري التحميل...
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background flex">
-      <aside className="hidden md:flex w-64 bg-primary-container text-white flex-col p-4 min-h-screen">
-        <div className="text-2xl font-bold mb-8 text-center">B2B Driver</div>
-        <nav className="space-y-2">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 p-3 rounded-lg bg-white/10 font-bold">
-            <span className="material-symbols-outlined">dashboard</span>
-            لوحة التحكم
-          </Link>
-          <Link href="/admin/users" className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-            <span className="material-symbols-outlined">people</span>
-            المستخدمين
-          </Link>
-          <Link href="/admin/drivers" className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-            <span className="material-symbols-outlined">local_shipping</span>
-            السائقين
-          </Link>
-          <Link href="/admin/trips" className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-            <span className="material-symbols-outlined">route</span>
-            الرحلات
-          </Link>
-          <Link href="/admin/payments" className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors">
-            <span className="material-symbols-outlined">payments</span>
-            المدفوعات
-          </Link>
-        </nav>
-      </aside>
+    <div className="space-y-6">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-primary mb-1">طلبات تسجيل الزبائن</h1>
+          <p className="text-on-surface-variant">مراجعة وتدقيق حسابات الشركات والزبائن الجدد.</p>
+        </div>
+        <div className="flex gap-3">
+          <button className="bg-surface-container-lowest text-primary px-4 py-2 rounded-lg font-semibold hover:shadow-md transition-all flex items-center gap-2 border border-outline-variant">
+            <span className="material-symbols-outlined text-sm">calendar_today</span>
+            {new Date().toLocaleDateString("ar")}
+          </button>
+        </div>
+      </header>
 
-      <main className="flex-grow p-4 md:p-8">
-        <h1 className="text-2xl font-bold text-primary mb-6">لوحة التحكم</h1>
+      {/* Stats Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {[
+          { label: "إجمالي المعلق", value: pendingUsers.length, icon: "pending_actions", bg: "bg-primary/10", text: "text-primary" },
+          { label: "المستخدمين", value: stats?.users || 0, icon: "group", bg: "bg-blue-50", text: "text-blue-600" },
+          { label: "السائقين", value: stats?.drivers || 0, icon: "local_shipping", bg: "bg-orange-50", text: "text-orange-600" },
+          { label: "الرحلات المكتملة", value: stats?.completedTrips || 0, icon: "task_alt", bg: "bg-green-50", text: "text-green-600" },
+        ].map((s) => (
+          <div key={s.label} className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant shadow-sm flex items-center gap-4">
+            <div className={`${s.bg} p-3 rounded-2xl ${s.text}`}>
+              <span className="material-symbols-outlined text-2xl">{s.icon}</span>
+            </div>
+            <div>
+              <p className="text-sm text-on-surface-variant font-bold mb-1">{s.label}</p>
+              <h4 className="text-2xl font-extrabold text-primary">{s.value}</h4>
+            </div>
+          </div>
+        ))}
+      </section>
 
-        {loading ? (
-          <div className="text-center py-12">جاري التحميل...</div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* Pending Users Table */}
+      <section className="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-outline-variant flex justify-between items-center">
+          <h3 className="text-xl font-bold text-primary">طلبات بانتظار المراجعة</h3>
+          {pendingUsers.length > 0 && (
+            <span className="bg-error-container text-error px-3 py-1 rounded-full text-xs font-bold">
+              {pendingUsers.length} طلب جديد
+            </span>
+          )}
+        </div>
+        <div className="overflow-x-auto">
+          {pendingUsers.length === 0 ? (
+            <div className="p-16 text-center text-on-surface-variant">
+              <span className="material-symbols-outlined text-5xl text-outline mb-4 block">check_circle</span>
+              لا توجد طلبات معلقة - جميع الحسابات تمت مراجعتها
+            </div>
+          ) : (
+            <table className="w-full text-right border-collapse">
+              <thead className="bg-surface-container-low text-on-surface-variant text-sm font-bold border-b border-outline-variant">
+                <tr>
+                  <th className="px-4 py-4">الاسم</th>
+                  <th className="px-4 py-4">الهاتف</th>
+                  <th className="px-4 py-4">الدور</th>
+                  <th className="px-4 py-4">تاريخ التسجيل</th>
+                  <th className="px-4 py-4 text-center">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant">
+                {pendingUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-surface-variant/10 transition-colors">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-outline-variant">
+                          <span className="material-symbols-outlined">
+                            {user.role === "driver" ? "local_shipping" : "person"}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-bold text-primary">{user.name}</p>
+                          <p className="text-xs text-on-surface-variant">
+                            {user.role === "driver" ? "حساب سائق" : "حساب فردي"}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm font-medium text-primary" dir="ltr">
+                      {user.phone}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="px-2 py-1 rounded-full text-xs font-bold bg-surface-container text-on-surface">
+                        {user.role === "driver" ? "سائق" : "زبون"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-on-surface-variant">
+                      {new Date(user.createdAt).toLocaleDateString("ar")}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => approveUser(user.id, user.role)}
+                          className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition-all shadow-sm"
+                        >
+                          <span className="material-symbols-outlined text-sm">check_circle</span>
+                          موافقة
+                        </button>
+                        <button
+                          onClick={() => rejectUser(user.id)}
+                          className="flex items-center gap-1 bg-surface-variant text-on-surface-variant px-4 py-2 rounded-lg text-sm font-bold hover:bg-error hover:text-white transition-all"
+                        >
+                          <span className="material-symbols-outlined text-sm">cancel</span>
+                          رفض
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </section>
+
+      {/* Analytics */}
+      {stats && (
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant shadow-sm">
+            <h3 className="text-lg font-bold text-primary mb-6">إحصائيات المنصة</h3>
+            <div className="space-y-4">
               {[
-                { label: "المستخدمين", value: stats?.users, color: "bg-blue-100 text-blue-700" },
-                { label: "السائقين", value: stats?.drivers, color: "bg-orange-100 text-orange-700" },
-                { label: "الرحلات", value: stats?.trips, color: "bg-purple-100 text-purple-700" },
-                { label: "الإيرادات (LYD)", value: stats?.revenue?.toFixed(0), color: "bg-green-100 text-green-700" },
-              ].map((s) => (
-                <div key={s.label} className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
-                  <p className="text-sm text-on-surface-variant mb-2">{s.label}</p>
-                  <p className="text-3xl font-bold text-primary">{s.value || 0}</p>
+                { label: "المستخدمين", value: stats.users, max: Math.max(stats.users, 1) * 1.5 },
+                { label: "السائقين", value: stats.drivers, max: Math.max(stats.drivers, 1) * 1.5 },
+                { label: "الرحلات", value: stats.trips, max: Math.max(stats.trips, 1) * 1.5 },
+                { label: "المكتملة", value: stats.completedTrips, max: Math.max(stats.completedTrips, 1) * 1.5 },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-on-surface-variant">{item.label}</span>
+                    <span className="font-bold text-primary">{item.value}</span>
+                  </div>
+                  <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-secondary-container rounded-full transition-all"
+                      style={{ width: `${(item.value / item.max) * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
               ))}
             </div>
-
-            <div className="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-outline-variant">
-                <h2 className="text-xl font-bold text-primary">اشتراكات بانتظار الموافقة</h2>
-              </div>
-              {pendingSubs.length === 0 ? (
-                <div className="p-12 text-center text-on-surface-variant">
-                  لا توجد طلبات اشتراك معلقة
-                </div>
-              ) : (
-                <div className="divide-y divide-outline-variant">
-                  {pendingSubs.map((sub) => (
-                    <div key={sub.id} className="p-6 flex justify-between items-center">
-                      <div>
-                        <p className="font-bold text-primary">{sub.driver.user.name}</p>
-                        <p className="text-sm text-on-surface-variant">{sub.driver.user.phone}</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="font-bold text-secondary">{sub.amount} LYD</p>
-                        <button
-                          onClick={() => approveSubscription(sub.id, sub.driver.id)}
-                          className="mt-2 bg-secondary-container text-white px-4 py-2 rounded-lg font-bold text-sm hover:brightness-110 active:scale-95 transition-all"
-                        >
-                          موافقة
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="mt-6 flex items-center justify-between text-sm">
+              <span className="text-on-surface-variant">الإيرادات: <strong className="text-primary">{stats.revenue?.toFixed(2)} LYD</strong></span>
             </div>
-          </>
-        )}
-      </main>
+          </div>
+
+          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant shadow-sm flex flex-col justify-center">
+            <h3 className="text-lg font-bold text-primary mb-4">سرعة التفعيل</h3>
+            <div className="flex items-center gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-primary">
+                      {stats.users > 0 ? Math.round((stats.users / (stats.users + pendingUsers.length + 1)) * 100) : 0}%
+                    </span>
+                    <span className="text-xs text-on-surface-variant">نسبة الموافقة</span>
+                  </div>
+                  <div className="h-10 w-px bg-outline-variant"></div>
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-green-600">{pendingUsers.length}</span>
+                    <span className="text-xs text-on-surface-variant">قيد الانتظار</span>
+                  </div>
+                </div>
+              </div>
+              <div className="relative w-32 h-32">
+                <svg className="w-full h-full -rotate-90">
+                  <circle cx="64" cy="64" r="58" fill="transparent" stroke="#e5eeff" strokeWidth="12" />
+                  <circle
+                    cx="64" cy="64" r="58" fill="transparent"
+                    stroke="#fd761a"
+                    strokeWidth="12"
+                    strokeDasharray="364.4"
+                    strokeDashoffset={364.4 * (1 - (stats.users / Math.max(stats.users + pendingUsers.length, 1))))}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xl font-extrabold text-primary">
+                    {stats.users > 0 ? Math.round((stats.users / Math.max(stats.users + pendingUsers.length, 1)) * 100) : 0}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -10,13 +10,18 @@ export async function GET() {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const [usersCount, driversCount, tripsCount, pendingSubs, completedTrips, revenue] = await Promise.all([
+    const [usersCount, driversCount, tripsCount, completedTrips, revenue, pendingUsers] = await Promise.all([
       prisma.user.count(),
       prisma.driver.count(),
       prisma.trip.count(),
-      prisma.subscription.findMany({ where: { status: "pending" }, include: { driver: { include: { user: { select: { name: true, phone: true } } } } } }),
       prisma.trip.count({ where: { status: "completed" } }),
       prisma.trip.aggregate({ where: { status: "completed" }, _sum: { agreedPrice: true } }),
+      prisma.user.findMany({
+        where: { role: { not: "admin" } },
+        include: { driver: true },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      }),
     ]);
 
     return NextResponse.json({
@@ -27,7 +32,14 @@ export async function GET() {
         completedTrips,
         revenue: revenue._sum.agreedPrice || 0,
       },
-      pendingSubscriptions: pendingSubs,
+      pendingUsers: pendingUsers.map((u) => ({
+        id: u.id,
+        name: u.name,
+        phone: u.phone || "",
+        role: u.role,
+        createdAt: u.createdAt.toISOString(),
+        subscriptionStatus: u.driver?.subscriptionStatus || null,
+      })),
     });
   } catch (error) {
     console.error("[Admin Stats] Error:", error);
