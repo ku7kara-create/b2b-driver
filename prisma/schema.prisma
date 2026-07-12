@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  emailVerified DateTime?
+  image         String?
+  phone         String?
+  passwordHash  String?
+  role          String         @default("customer")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  driver        Driver?
+  customerTrips Trip[]         @relation("CustomerTrips")
+  notifications Notification[]
+  reviewsGiven  Review[]       @relation("Reviewer")
+  reviewsRcvd   Review[]       @relation("Reviewee")
+}
+
+model Driver {
+  id                  String         @id @default(cuid())
+  userId              String         @unique
+  subscriptionStatus  String         @default("inactive")
+  subscriptionExpiry  DateTime?
+  isAvailable         Boolean        @default(false)
+  currentLat          Float?
+  currentLng          Float?
+  rating              Float          @default(0)
+  totalTrips          Int            @default(0)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  user          User            @relation(fields: [userId], references: [id])
+  vehicles      Vehicle[]
+  subscriptions Subscription[]
+  trips         Trip[]          @relation("DriverTrips")
+  bids          Bid[]
+}
+
+model Vehicle {
+  id          String   @id @default(cuid())
+  driverId    String
+  type        String
+  make        String?
+  model       String?
+  year        Int?
+  plateNumber String?
+  photo       String?
+  createdAt   DateTime @default(now())
+
+  driver Driver @relation(fields: [driverId], references: [id])
+}
+
+model Subscription {
+  id            String    @id @default(cuid())
+  driverId      String
+  amount        Float
+  currency      String    @default("LYD")
+  status        String    @default("pending")
+  paymentMethod String?
+  paidAt        DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime  @default(now())
+
+  driver Driver @relation(fields: [driverId], references: [id])
+}
+
+model Trip {
+  id               String    @id @default(cuid())
+  customerId       String
+  driverId         String?
+  serviceType      String
+  pickupLat        Float
+  pickupLng        Float
+  pickupAddress    String
+  dropoffLat       Float
+  dropoffLng       Float
+  dropoffAddress   String
+  cargoDetails     String?
+  cargoPhotos      String?
+  vehicleMakeModel String?
+  status           String    @default("pending")
+  agreedPrice      Float?
+  acceptedBidId    String?
+  createdAt        DateTime  @default(now())
+  startedAt        DateTime?
+  completedAt      DateTime?
+
+  customer User     @relation("CustomerTrips", fields: [customerId], references: [id])
+  driver   Driver?  @relation("DriverTrips", fields: [driverId], references: [id])
+  bids     Bid[]
+  reviews  Review[]
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  tripId    String
+  driverId  String
+  price     Float
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  trip   Trip   @relation(fields: [tripId], references: [id])
+  driver Driver @relation(fields: [driverId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  data      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  tripId    String
+  reviewerId String
+  revieweeId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  trip     Trip @relation(fields: [tripId], references: [id])
+  reviewer User @relation("Reviewer", fields: [reviewerId], references: [id])
+  reviewee User @relation("Reviewee", fields: [revieweeId], references: [id])
+}
