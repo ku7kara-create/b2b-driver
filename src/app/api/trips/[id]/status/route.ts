@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
+import { createNotification } from "../../notifications/route";
 
 export async function POST(
   request: NextRequest,
@@ -14,14 +15,12 @@ export async function POST(
     }
 
     const { status } = await request.json();
-
-    const allowedStatuses = ["started", "completed"];
-    if (!allowedStatuses.includes(status)) {
+    const allowed = ["started", "completed"];
+    if (!allowed.includes(status)) {
       return NextResponse.json({ error: "حالة غير صالحة" }, { status: 400 });
     }
 
     const trip = await prisma.trip.findUnique({ where: { id: params.id } });
-
     if (!trip) {
       return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
     }
@@ -34,20 +33,38 @@ export async function POST(
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const updateData: any = { status };
-    if (status === "started") updateData.startedAt = new Date();
-    if (status === "completed") updateData.completedAt = new Date();
+    const updates: Record<string, unknown> = { status };
+    if (status === "started") updates.startedAt = new Date();
+    if (status === "completed") updates.completedAt = new Date();
 
     await prisma.trip.update({
       where: { id: params.id },
-      data: updateData,
+      data: updates,
     });
+
+    if (status === "started") {
+      await createNotification(
+        trip.customerId,
+        "trip_started",
+        "بدأت الرحلة",
+        "السائق في طريقه إليك",
+        JSON.stringify({ tripId: params.id }),
+      );
+    }
 
     if (status === "completed") {
       await prisma.driver.update({
         where: { id: driver.id },
         data: { totalTrips: { increment: 1 } },
       });
+
+      await createNotification(
+        trip.customerId,
+        "trip_completed",
+        "اكتملت الرحلة",
+        "تم إتمام الرحلة بنجاح. يرجى تقييم السائق.",
+        JSON.stringify({ tripId: params.id }),
+      );
     }
 
     return NextResponse.json({ success: true });

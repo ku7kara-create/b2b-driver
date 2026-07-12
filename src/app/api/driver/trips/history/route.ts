@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || (session.user as any).role !== "driver") {
@@ -17,20 +14,19 @@ export async function GET(
       where: { userId: (session.user as any).id },
     });
 
-    const trip = await prisma.trip.findUnique({
-      where: { id: params.id },
-      include: {
-        customer: { select: { name: true, phone: true } },
-      },
-    });
-
-    if (!trip) {
-      return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
+    if (!driver) {
+      return NextResponse.json({ trips: [] });
     }
 
-    return NextResponse.json({ trip });
+    const trips = await prisma.trip.findMany({
+      where: { driverId: driver.id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+
+    return NextResponse.json({ trips });
   } catch (error) {
-    console.error("[Driver Trip GET] Error:", error);
+    console.error("[Driver Trip History] Error:", error);
     return NextResponse.json({ error: "حدث خطأ" }, { status: 500 });
   }
 }
