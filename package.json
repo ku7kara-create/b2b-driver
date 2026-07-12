@@ -1,0 +1,56 @@
+{
+  "name": "b2b-driver",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production tsx server.js",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "lint": "next lint"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@auth/core": "^0.34.3",
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@tanstack/react-query": "^5.51.0",
+    "@trpc/client": "^11.18.0",
+    "@trpc/next": "^11.18.0",
+    "@trpc/react-query": "^11.18.0",
+    "@trpc/server": "^11.18.0",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.11.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "lucide-react": "^1.24.0",
+    "mapbox-gl": "^3.5.0",
+    "next": "^16.2.10",
+    "next-auth": "^4.24.14",
+    "prisma": "^7.8.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-hook-form": "^7.52.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "superjson": "^2.2.1",
+    "tailwind-merge": "^2.4.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.3.2",
+    "tsx": "^4.19.0",
+    "typescript": "7.0.2"
+  }
+}
