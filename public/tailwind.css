@@ -753,6 +753,10 @@ video {
   z-index: 100;
 }
 
+.m-0 {
+  margin: 0px;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -1397,11 +1401,11 @@ video {
 
 .border-secondary-container {
   --tw-border-opacity: 1;
-  border-color: rgb(253 118 26 / var(--tw-border-opacity, 1));
+  border-color: rgb(224 90 43 / var(--tw-border-opacity, 1));
 }
 
 .border-secondary-container\/20 {
-  border-color: rgb(253 118 26 / 0.2);
+  border-color: rgb(224 90 43 / 0.2);
 }
 
 .border-white {
@@ -1416,6 +1420,16 @@ video {
 .border-r-secondary {
   --tw-border-opacity: 1;
   border-right-color: rgb(157 67 0 / var(--tw-border-opacity, 1));
+}
+
+.bg-\[\#1A1A2E\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(26 26 46 / var(--tw-bg-opacity, 1));
+}
+
+.bg-\[\#F9F9F9\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 249 249 / var(--tw-bg-opacity, 1));
 }
 
 .bg-background {
@@ -1506,15 +1520,15 @@ video {
 
 .bg-secondary-container {
   --tw-bg-opacity: 1;
-  background-color: rgb(253 118 26 / var(--tw-bg-opacity, 1));
+  background-color: rgb(224 90 43 / var(--tw-bg-opacity, 1));
 }
 
 .bg-secondary-container\/10 {
-  background-color: rgb(253 118 26 / 0.1);
+  background-color: rgb(224 90 43 / 0.1);
 }
 
 .bg-secondary-container\/5 {
-  background-color: rgb(253 118 26 / 0.05);
+  background-color: rgb(224 90 43 / 0.05);
 }
 
 .bg-secondary-fixed {
@@ -1629,6 +1643,10 @@ video {
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.p-0 {
+  padding: 0px;
 }
 
 .p-1 {
@@ -1984,7 +2002,7 @@ video {
 
 .text-secondary-container {
   --tw-text-opacity: 1;
-  color: rgb(253 118 26 / var(--tw-text-opacity, 1));
+  color: rgb(224 90 43 / var(--tw-text-opacity, 1));
 }
 
 .text-tertiary {
@@ -2046,6 +2064,12 @@ video {
 
 .opacity-90 {
   opacity: 0.9;
+}
+
+.shadow-2xl {
+  --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .shadow-\[0_-10px_40px_rgba\(0\2c 0\2c 0\2c 0\.1\)\] {
@@ -2229,7 +2253,7 @@ video {
 
 .hover\:border-secondary-container:hover {
   --tw-border-opacity: 1;
-  border-color: rgb(253 118 26 / var(--tw-border-opacity, 1));
+  border-color: rgb(224 90 43 / var(--tw-border-opacity, 1));
 }
 
 .hover\:bg-error:hover {
@@ -2249,7 +2273,7 @@ video {
 
 .hover\:bg-secondary-container:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(253 118 26 / var(--tw-bg-opacity, 1));
+  background-color: rgb(224 90 43 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:bg-surface-container:hover {
@@ -2287,7 +2311,7 @@ video {
 
 .hover\:text-secondary-container:hover {
   --tw-text-opacity: 1;
-  color: rgb(253 118 26 / var(--tw-text-opacity, 1));
+  color: rgb(224 90 43 / var(--tw-text-opacity, 1));
 }
 
 .hover\:text-white:hover {
@@ -2329,7 +2353,7 @@ video {
 
 .focus\:border-secondary-container:focus {
   --tw-border-opacity: 1;
-  border-color: rgb(253 118 26 / var(--tw-border-opacity, 1));
+  border-color: rgb(224 90 43 / var(--tw-border-opacity, 1));
 }
 
 .focus\:outline-none:focus {
@@ -2382,16 +2406,16 @@ video {
 
 .group:hover .group-hover\:bg-secondary-container {
   --tw-bg-opacity: 1;
-  background-color: rgb(253 118 26 / var(--tw-bg-opacity, 1));
+  background-color: rgb(224 90 43 / var(--tw-bg-opacity, 1));
 }
 
 .group:hover .group-hover\:bg-secondary-container\/10 {
-  background-color: rgb(253 118 26 / 0.1);
+  background-color: rgb(224 90 43 / 0.1);
 }
 
 .group:hover .group-hover\:text-secondary-container {
   --tw-text-opacity: 1;
-  color: rgb(253 118 26 / var(--tw-text-opacity, 1));
+  color: rgb(224 90 43 / var(--tw-text-opacity, 1));
 }
 
 .group:hover .group-hover\:text-white {
@@ -2401,12 +2425,12 @@ video {
 
 .peer:checked ~ .peer-checked\:border-secondary-container {
   --tw-border-opacity: 1;
-  border-color: rgb(253 118 26 / var(--tw-border-opacity, 1));
+  border-color: rgb(224 90 43 / var(--tw-border-opacity, 1));
 }
 
 .peer:checked ~ .peer-checked\:bg-secondary-container {
   --tw-bg-opacity: 1;
-  background-color: rgb(253 118 26 / var(--tw-bg-opacity, 1));
+  background-color: rgb(224 90 43 / var(--tw-bg-opacity, 1));
 }
 
 .peer:checked ~ .peer-checked\:bg-secondary-fixed {

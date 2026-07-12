@@ -20,7 +20,7 @@ export default {
         "on-primary-fixed-variant": "#3c475a",
 
         secondary: "#9d4300",
-        "secondary-container": "#fd761a",
+        "secondary-container": "#E05A2B",
         "secondary-fixed": "#ffdbca",
         "secondary-fixed-dim": "#ffb690",
 
