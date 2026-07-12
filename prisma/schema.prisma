@@ -9,10 +9,10 @@ datasource db {
 model User {
   id            String         @id @default(cuid())
   name          String
-  email         String         @unique
+  email         String?
   emailVerified DateTime?
   image         String?
-  phone         String?
+  phone         String         @unique
   passwordHash  String?
   role          String         @default("customer")
   createdAt     DateTime       @default(now())
@@ -35,6 +35,8 @@ model Driver {
   currentLng          Float?
   rating              Float          @default(0)
   totalTrips          Int            @default(0)
+  idNumber            String?
+  licenseType         String?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 
