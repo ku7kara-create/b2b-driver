@@ -57,7 +57,6 @@ export default function DriverBidPage() {
       return;
     }
     setSubmitting(true);
-
     try {
       const res = await fetch("/api/bids", {
         method: "POST",
@@ -78,118 +77,146 @@ export default function DriverBidPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-on-surface-variant">جاري التحميل...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center text-on-surface-variant">
+        جاري التحميل...
       </div>
     );
   }
 
-  if (!trip) {
+  if (!trip || error) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <span className="material-symbols-outlined text-6xl text-outline">error</span>
           <p className="mt-4 text-on-surface-variant">{error || "الرحلة غير موجودة"}</p>
-          <Link href="/driver/dashboard" className="text-secondary font-bold mt-2 block">
-            العودة للرئيسية
-          </Link>
+          <Link href="/driver/dashboard" className="text-secondary font-bold mt-2 block">العودة</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-        <Link href="/driver/dashboard" className="p-2 hover:bg-surface-container-low rounded-full">
-          <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-        </Link>
-        <h1 className="text-xl font-semibold text-on-surface mr-4">تقديم عرض سعر</h1>
+    <div className="min-h-screen bg-background flex flex-col pb-20">
+      <header className="bg-surface border-b border-outline-variant w-full sticky top-0 z-50">
+        <div className="flex flex-row-reverse justify-between items-center w-full px-4 py-2 max-w-5xl mx-auto h-16">
+          <Link href="/driver/dashboard" className="p-2 rounded-full hover:bg-surface-container-low transition-colors">
+            <span className="material-symbols-outlined text-primary">arrow_forward</span>
+          </Link>
+          <h1 className="text-xl font-bold text-primary">تقديم عرض</h1>
+          <div className="w-10"></div>
+        </div>
       </header>
 
-      <main className="flex-grow flex items-center justify-center py-8 px-4">
-        <div className="w-full max-w-lg">
-          <div className="bg-white border border-outline-variant rounded-xl p-6 mb-6 shadow-sm">
-            <span className="bg-secondary-fixed text-secondary text-xs font-bold px-2 py-1 rounded-full mb-3 inline-block">
+      <main className="max-w-lg mx-auto px-4 py-6 w-full">
+        {/* Route Card */}
+        <div className="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm mb-6">
+          <div className="p-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center">
+                <span className="material-symbols-outlined text-on-primary-fixed">person</span>
+              </div>
+              <div>
+                <p className="font-medium text-on-surface">عميل</p>
+                <p className="text-xs text-on-surface-variant">طلب #{trip.id.slice(-8)}</p>
+              </div>
+            </div>
+            <span className="bg-secondary-fixed text-secondary text-xs font-bold px-2 py-1 rounded-md">
               {SERVICE_LABELS[trip.serviceType]}
             </span>
-
-            <div className="space-y-3 my-4">
-              <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-green-500 mt-1">trip_origin</span>
-                <div>
-                  <p className="text-xs text-on-surface-variant">موقع الانطلاق</p>
-                  <p className="text-on-surface font-medium">{trip.pickupAddress}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-red-500 mt-1">location_on</span>
-                <div>
-                  <p className="text-xs text-on-surface-variant">موقع الوصول</p>
-                  <p className="text-on-surface font-medium">{trip.dropoffAddress}</p>
-                </div>
-              </div>
-              {trip.cargoDetails && (
-                <div className="bg-surface-container-low p-3 rounded-lg">
-                  <p className="text-xs text-on-surface-variant mb-1">تفاصيل البضائع</p>
-                  <p className="text-sm text-on-surface">{trip.cargoDetails}</p>
-                </div>
-              )}
-              {trip.vehicleMakeModel && (
-                <div className="bg-surface-container-low p-3 rounded-lg">
-                  <p className="text-xs text-on-surface-variant mb-1">نوع المركبة</p>
-                  <p className="text-sm text-on-surface">{trip.vehicleMakeModel}</p>
-                </div>
-              )}
-            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+          <div className="p-4 space-y-4">
+            {/* Route Visualization */}
+            <div className="relative pr-8 border-r-2 border-dashed border-outline-variant space-y-6 mr-1">
+              <div className="relative">
+                <div className="absolute -right-[33px] top-0 w-4 h-4 rounded-full bg-secondary ring-4 ring-white"></div>
+                <p className="text-xs text-on-surface-variant">نقطة الانطلاق</p>
+                <p className="text-base text-on-surface font-medium">{trip.pickupAddress}</p>
+              </div>
+              <div className="relative">
+                <div className="absolute -right-[33px] top-0 w-4 h-4 rounded-full bg-primary ring-4 ring-white"></div>
+                <p className="text-xs text-on-surface-variant">وجهة الوصول</p>
+                <p className="text-base text-on-surface font-medium">{trip.dropoffAddress}</p>
+              </div>
+            </div>
+
+            {/* Service Details */}
+            {trip.cargoDetails && (
+              <div className="bg-surface-container p-3 rounded-lg">
+                <p className="text-xs text-on-surface-variant mb-1">تفاصيل البضائع</p>
+                <p className="text-sm text-on-surface">{trip.cargoDetails}</p>
+              </div>
+            )}
+            {trip.vehicleMakeModel && (
+              <div className="bg-surface-container p-3 rounded-lg">
+                <p className="text-xs text-on-surface-variant mb-1">نوع المركبة</p>
+                <p className="text-sm text-on-surface font-bold">{trip.vehicleMakeModel}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Price Input */}
+          <div className="p-4 bg-surface-container-low border-t border-outline-variant">
             {error && (
-              <div className="bg-error-container text-on-error-container p-3 rounded-lg text-sm text-center mb-4">
+              <div className="bg-error-container text-on-error-container p-3 rounded-lg text-sm text-center mb-3">
                 {error}
               </div>
             )}
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-on-surface-variant px-1">
-                عرض السعر (LYD)
-              </label>
-              <div className="relative" dir="ltr">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="relative">
                 <input
+                  className="w-full bg-white border border-outline rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary focus:border-secondary text-base text-right"
+                  placeholder="أدخل سعرك"
                   type="number"
-                  className="w-full px-3 pr-12 h-14 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary-container text-lg font-bold text-left"
-                  placeholder="0.00"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm font-medium">
                   LYD
                 </span>
               </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-14 bg-secondary-container text-white font-bold text-lg rounded-lg shadow-md hover:brightness-110 active:scale-[0.98] transition-all mt-6 flex items-center justify-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <span className="material-symbols-outlined animate-spin">sync</span>
-                  جاري التقديم...
-                </>
-              ) : (
-                <>
-                  <span>تقديم العرض</span>
-                  <span className="material-symbols-outlined">send</span>
-                </>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={submitting}
+                className={`w-full font-bold py-3 rounded-lg transition-colors text-base ${
+                  submitting
+                    ? "bg-outline-variant text-on-surface-variant"
+                    : "bg-secondary-container text-white hover:bg-secondary"
+                }`}
+              >
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined animate-spin">sync</span>
+                    جارٍ التقديم...
+                  </span>
+                ) : (
+                  "تقديم عرض"
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </main>
+
+      <nav className="fixed bottom-0 left-0 w-full z-50 bg-surface border-t border-outline-variant flex flex-row-reverse justify-around items-center px-3 py-2 shadow-sm">
+        <Link href="/driver/dashboard" className="flex flex-col items-center text-on-surface-variant px-3 py-1 hover:bg-surface-container transition-colors">
+          <span className="material-symbols-outlined">dashboard</span>
+          <span className="text-xs mt-1">الرئيسية</span>
+        </Link>
+        <Link href="/driver/bid" className="flex flex-col items-center bg-secondary-container text-white rounded-xl px-3 py-1">
+          <span className="material-symbols-outlined">local_shipping</span>
+          <span className="text-xs mt-1 font-bold">العروض</span>
+        </Link>
+        <Link href="/driver/subscription" className="flex flex-col items-center text-on-surface-variant px-3 py-1 hover:bg-surface-container transition-colors">
+          <span className="material-symbols-outlined">account_balance_wallet</span>
+          <span className="text-xs mt-1">المحفظة</span>
+        </Link>
+        <Link href="/login" className="flex flex-col items-center text-on-surface-variant px-3 py-1 hover:bg-surface-container transition-colors">
+          <span className="material-symbols-outlined">person</span>
+          <span className="text-xs mt-1">الحساب</span>
+        </Link>
+      </nav>
     </div>
   );
 }
