@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx server.js",
+    "dev": "tsx server.mjs",
     "build": "next build",
-    "start": "NODE_ENV=production tsx server.js",
+    "start": "tsx server.mjs",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",

@@ -1,6 +1,4 @@
-import { ToastProvider } from "@/hooks/use-toast";
-import { SessionProvider } from "next-auth/react";
-import { SocketProvider } from "@/hooks/use-socket";
+import Providers from "@/components/providers";
 
 export default function RootLayout({
   children,
@@ -16,11 +14,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-background text-on-surface font-arabic antialiased">
-        <SessionProvider>
-          <SocketProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </SocketProvider>
-        </SessionProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
