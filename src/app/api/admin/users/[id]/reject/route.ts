@@ -13,6 +13,11 @@ export async function POST(
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: params.id } });
+    if (!user) {
+      return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+    }
+
     await prisma.user.delete({ where: { id: params.id } });
 
     return NextResponse.json({ success: true });

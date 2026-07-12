@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
+import { broadcastNewTrip } from "@/server/socket";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { serviceType, pickupAddress, dropoffAddress, cargoDetails, vehicleMakeModel } = body;
+    const { serviceType, pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng, cargoDetails, cargoPhotos, vehicleMakeModel } = body;
 
     if (!serviceType || !pickupAddress || !dropoffAddress) {
       return NextResponse.json({ error: "جميع الحقول المطلوبة غير مكتملة" }, { status: 400 });
@@ -22,21 +23,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "نوع الخدمة غير صالح" }, { status: 400 });
     }
 
+    if (serviceType === "porter" && !cargoDetails) {
+      return NextResponse.json({ error: "تفاصيل البضائع مطلوبة لخدمة البورتر" }, { status: 400 });
+    }
+
+    if (serviceType === "tow_truck" && !vehicleMakeModel) {
+      return NextResponse.json({ error: "نوع المركبة مطلوب لخدمة الساحبة" }, { status: 400 });
+    }
+
     const trip = await prisma.trip.create({
       data: {
         customerId: (session.user as any).id,
         serviceType,
         pickupAddress,
-        pickupLat: 0,
-        pickupLng: 0,
+        pickupLat: pickupLat || 24.7136,
+        pickupLng: pickupLng || 46.6753,
         dropoffAddress,
-        dropoffLat: 0,
-        dropoffLng: 0,
+        dropoffLat: dropoffLat || 24.7742,
+        dropoffLng: dropoffLng || 46.7385,
         cargoDetails: cargoDetails || null,
+        cargoPhotos: cargoPhotos || null,
         vehicleMakeModel: vehicleMakeModel || null,
         status: "pending",
       },
     });
+
+    broadcastNewTrip(trip.id, serviceType, pickupAddress);
 
     return NextResponse.json({ tripId: trip.id }, { status: 201 });
   } catch (error) {
@@ -59,7 +71,7 @@ export async function GET(request: NextRequest) {
       const activeTrip = await prisma.trip.findFirst({
         where: {
           customerId: (session.user as any).id,
-          status: { in: ["pending", "accepted"] },
+          status: { in: ["pending", "accepted", "started"] },
         },
         orderBy: { createdAt: "desc" },
       });

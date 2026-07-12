@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    if (!session?.user || (session.user as any).role !== "driver") {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
 
@@ -14,15 +14,16 @@ export async function GET() {
       where: { userId: (session.user as any).id },
     });
 
-    if (!driver || driver.subscriptionStatus !== "active") {
+    if (!driver) {
+      return NextResponse.json({ error: "حساب السائق غير موجود" }, { status: 404 });
+    }
+
+    if (driver.subscriptionStatus !== "active") {
       return NextResponse.json({ error: "الاشتراك غير مفعل" }, { status: 403 });
     }
 
     const trips = await prisma.trip.findMany({
-      where: {
-        status: "pending",
-        driverId: null,
-      },
+      where: { status: "pending", driverId: null },
       orderBy: { createdAt: "desc" },
       take: 20,
     });

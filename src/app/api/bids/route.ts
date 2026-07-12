@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
-import { broadcastNewTrip, emitBidUpdate } from "@/server/socket";
+import { emitBidUpdate } from "@/server/socket";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
 
     const { tripId, price } = await request.json();
 
-    if (!tripId || !price || price <= 0) {
-      return NextResponse.json({ error: "بيانات غير صالحة" }, { status: 400 });
+    if (!tripId || !price || typeof price !== "number" || price <= 0) {
+      return NextResponse.json({ error: "الرجاء إدخال سعر صحيح" }, { status: 400 });
     }
 
     const driver = await prisma.driver.findUnique({
@@ -22,16 +22,24 @@ export async function POST(request: NextRequest) {
       include: { user: true },
     });
 
-    if (!driver || driver.subscriptionStatus !== "active") {
-      return NextResponse.json({ error: "يجب تفعيل الاشتراك أولاً" }, { status: 403 });
+    if (!driver) {
+      return NextResponse.json({ error: "حساب السائق غير موجود" }, { status: 404 });
     }
 
-    const trip = await prisma.trip.findUnique({
-      where: { id: tripId },
-    });
+    if (driver.subscriptionStatus !== "active") {
+      return NextResponse.json({
+        error: "الاشتراك غير مفعل. يرجى تفعيل الاشتراك الشهري (150 LYD) للوصول إلى الطلبات.",
+      }, { status: 403 });
+    }
+
+    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
 
     if (!trip || trip.status !== "pending") {
-      return NextResponse.json({ error: "الرحلة غير متاحة للعروض" }, { status: 400 });
+      return NextResponse.json({ error: "الرحلة غير متاحة للعروض حالياً" }, { status: 400 });
+    }
+
+    if (trip.customerId === driver.userId) {
+      return NextResponse.json({ error: "لا يمكنك تقديم عرض على طلبك الخاص" }, { status: 400 });
     }
 
     const existing = await prisma.bid.findFirst({
@@ -43,17 +51,8 @@ export async function POST(request: NextRequest) {
     }
 
     const bid = await prisma.bid.create({
-      data: {
-        tripId,
-        driverId: driver.id,
-        price,
-        status: "pending",
-      },
-      include: {
-        driver: {
-          include: { user: { select: { name: true } } },
-        },
-      },
+      data: { tripId, driverId: driver.id, price, status: "pending" },
+      include: { driver: { include: { user: { select: { name: true } } } } },
     });
 
     emitBidUpdate(tripId, {
