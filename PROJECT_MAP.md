@@ -87,21 +87,34 @@
 └──────────────────────────────────────────────────────┘
 
 المسارات (App Router):
-/                        → الهبوط + اختيار الخدمة
-/(customer)/request      → طلب خدمة + خريطة
-/(customer)/bids          → استقبال العروض
-/(customer)/trip/[id]     → تتبع الرحلة
-/(driver)/subscription    → الاشتراك والدفع
-/(driver)/dashboard       → لوحة السائق
-/(driver)/bid/[tripId]    → تقديم عرض
-/(driver)/trip/[id]       → تنفيذ الرحلة
-/(admin)/dashboard        → لوحة المشرف
-/(admin)/users            → إدارة المستخدمين
-/(admin)/drivers          → إدارة السائقين
-/(admin)/trips            → سجل الرحلات
-/(admin)/payments         → تأكيد المدفوعات
-/api/auth/[...nextauth]   → NextAuth API
-/api/trpc/[trpc]          → tRPC endpoint
+/                        → الهبوط + اختيار الحساب
+/login                   → تسجيل الدخول
+/register/customer       → تسجيل عميل
+/register/driver         → تسجيل سائق
+/customer/dashboard      → لوحة العميل
+/customer/request        → طلب خدمة + خريطة
+/customer/bids/[id]      → العروض والمزايدات
+/customer/trip/[id]      → تتبع الرحلة مباشر
+/driver/dashboard        → لوحة السائق (الطلبات القريبة)
+/driver/bid/[tripId]     → تقديم عرض سعر
+/driver/trip/[id]        → تنفيذ الرحلة
+/driver/subscription     → الاشتراك والدفع
+/admin/dashboard         → لوحة المشرف
+/admin/users             → إدارة المستخدمين
+/admin/drivers           → إدارة السائقين
+/admin/trips             → سجل الرحلات
+/admin/payments          → تأكيد المدفوعات
+/api/auth/[...nextauth]  → NextAuth API
+/api/register            → تسجيل مستخدم جديد
+/api/trips               → إنشاء/استعراض الرحلات
+/api/trips/[id]/bids     → عروض الرحلة
+/api/trips/[id]/accept   → قبول عرض
+/api/trips/[id]/status   → تحديث حالة الرحلة
+/api/bids                → تقديم عرض
+/api/bids/[id]/reject    → رفض عرض
+/api/driver/trips        → طلبات السائق
+/api/driver/subscription → حالة الاشتراك
+/api/admin/stats         → إحصائيات المشرف
 ```
 
 ---
@@ -110,11 +123,9 @@
 
 | # | العنصر المعلق | السبب | الإجراء المطلوب |
 |---|---|---|---|
-| 1 | صور واجهات المستخدم (PNG/JPG) | لم ترسل بعد من أداة التصميم | انتظار المستخدم لإرسال التصاميم لـ M4+ |
-| 2 | مفاتيح Mapbox API | لم توفر بعد | متغيرات البيئة جاهزة (`NEXT_PUBLIC_MAPBOX_TOKEN`) |
-| 3 | بوابة الدفع (150 LYD) | تحتاج تكامل مع مزود دفع ليبي | تنفيذ يدوي للتأكيد من المشرف حالياً |
-| 4 | Firebase Cloud Messaging | للإشعارات الفورية (M8) | سيتم إضافته عند M8 |
-| 5 | PostgreSQL (إنتاج) | حالياً SQLite للتطوير | تغيير سطر واحد في prisma.config.ts + adapter |
+| 1 | مفاتيح Mapbox API | لم توفر بعد | متغيرات البيئة جاهزة (`NEXT_PUBLIC_MAPBOX_TOKEN`) |
+| 2 | بوابة الدفع (150 LYD) | تحتاج تكامل مع مزود دفع ليبي | تنفيذ يدوي للتأكيد من المشرف حالياً |
+| 3 | PostgreSQL (إنتاج) | حالياً SQLite للتطوير | تغيير سطر واحد في prisma.config.ts + adapter |
 
 ---
 
@@ -123,4 +134,6 @@
 | التاريخ | المرحلة | الوصف |
 |---|---|---|
 | 2026-07-12 | M1+M2 | تهيئة المشروع، تثبيت الحزم، Prisma schema، بذور، خادم يعمل |
-| 2026-07-12 | M3 | المصادقة: 4 شاشات (اختيار حساب، دخول، تسجيل عميل، تسجيل سائق)، NextAuth + JWT، API تسجيل، حماية المسارات |
+| 2026-07-12 | M3 | المصادقة: 4 شاشات، NextAuth + JWT، API تسجيل، حماية المسارات |
+| 2026-07-12 | M4 | تطبيق العميل: 4 شاشات + 6 API endpoints |
+| 2026-07-12 | M5+M6+M7 | Socket.io فوري، تطبيق السائق، لوحة تحكم المشرف |
