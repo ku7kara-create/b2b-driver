@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
-import { createNotification } from "../../notifications/route";
+
+async function createNotification(userId: string, type: string, title: string, body: string, data?: string) {
+  try {
+    await prisma.notification.create({
+      data: { userId, type, title, body, data: data || null },
+    });
+  } catch {}
+}
 
 export async function POST(
   request: NextRequest,

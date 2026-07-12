@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
                     stroke="#fd761a"
                     strokeWidth="12"
                     strokeDasharray="364.4"
-                    strokeDashoffset={364.4 * (1 - (stats.users / Math.max(stats.users + pendingUsers.length, 1))))}
+                    strokeDashoffset={364.4 * (1 - (stats.users / Math.max(stats.users + pendingUsers.length, 1)))}
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">

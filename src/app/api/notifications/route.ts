@@ -52,11 +52,3 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "حدث خطأ" }, { status: 500 });
   }
 }
-
-export async function createNotification(userId: string, type: string, title: string, body: string, data?: string) {
-  try {
-    await prisma.notification.create({
-      data: { userId, type, title, body, data: data || null },
-    });
-  } catch {}
-}
