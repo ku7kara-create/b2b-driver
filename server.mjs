@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { createServer } from "node:http";
 import { parse } from "node:url";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
 import next from "next";
 import { initSocketServer } from "./src/server/socket.js";
@@ -40,15 +40,18 @@ const httpServer = createServer((req, res) => {
     // Serve static files from public/ directory
     if (parsedUrl.pathname && !parsedUrl.pathname.startsWith("/_next/") && !parsedUrl.pathname.startsWith("/api/")) {
       const filePath = join(process.cwd(), "public", parsedUrl.pathname);
-      if (existsSync(filePath) && !existsSync(filePath + "/index.html") && existsSync(filePath) && !(require("fs").statSync(filePath).isDirectory())) {
-        try {
-          const ext = extname(filePath).toLowerCase();
-          const contentType = MIME_TYPES[ext] || "application/octet-stream";
-          const content = readFileSync(filePath);
-          res.writeHead(200, { "Content-Type": contentType, "Content-Length": content.length });
-          res.end(content);
-          return;
-        } catch {}
+      if (existsSync(filePath)) {
+        const fileStat = statSync(filePath);
+        if (fileStat.isFile()) {
+          try {
+            const ext = extname(filePath).toLowerCase();
+            const contentType = MIME_TYPES[ext] || "application/octet-stream";
+            const content = readFileSync(filePath);
+            res.writeHead(200, { "Content-Type": contentType, "Content-Length": content.length });
+            res.end(content);
+            return;
+          } catch {}
+        }
       }
     }
 
