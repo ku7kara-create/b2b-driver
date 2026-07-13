@@ -1,5 +1,7 @@
 import "dotenv/config";
 import { createServer } from "node:http";
+import { readFileSync, existsSync } from "node:fs";
+import { join, extname } from "node:path";
 import next from "next";
 import { initSocketServer } from "./src/server/socket.js";
 
@@ -9,6 +11,15 @@ const port = parseInt(process.env.PORT || "5001", 10);
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
+
+const MIME_TYPES = {
+  ".css": "text/css",
+  ".js": "application/javascript",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+};
 
 await app.prepare();
 
@@ -20,13 +31,25 @@ const httpServer = createServer((req, res) => {
     if (parsedUrl.pathname === "/api/health") {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({
-        status: "ok",
-        app: "B2B Driver",
-        version: "1.0.0",
-        uptime: process.uptime(),
-        timestamp: new Date().toISOString(),
+        status: "ok", app: "B2B Driver", version: "1.0.0",
+        uptime: process.uptime(), timestamp: new Date().toISOString(),
       }));
       return;
+    }
+
+    // Serve static files from public/ directory
+    if (!parsedUrl.pathname.startsWith("/_next/") && !parsedUrl.pathname.startsWith("/api/")) {
+      const filePath = join(process.cwd(), "public", parsedUrl.pathname);
+      if (existsSync(filePath)) {
+        try {
+          const ext = extname(filePath).toLowerCase();
+          const contentType = MIME_TYPES[ext] || "application/octet-stream";
+          const content = readFileSync(filePath);
+          res.writeHead(200, { "Content-Type": contentType, "Content-Length": content.length });
+          res.end(content);
+          return;
+        } catch {}
+      }
     }
 
     handle(req, res, {
@@ -34,7 +57,7 @@ const httpServer = createServer((req, res) => {
       query: Object.fromEntries(parsedUrl.searchParams),
     });
   } catch (err) {
-    console.error("[Server] Request error:", err);
+    console.error("[Server] Error:", err);
     res.writeHead(500);
     res.end("Internal Server Error");
   }
