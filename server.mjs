@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { createServer } from "node:http";
+import { parse } from "node:url";
 import { readFileSync, existsSync } from "node:fs";
 import { join, extname } from "node:path";
 import next from "next";
@@ -25,8 +26,7 @@ await app.prepare();
 
 const httpServer = createServer((req, res) => {
   try {
-    const reqUrl = req.url || "/";
-    const parsedUrl = new URL(reqUrl, `http://${hostname}:${port}`);
+    const parsedUrl = parse(req.url || "/", true);
 
     if (parsedUrl.pathname === "/api/health") {
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -38,9 +38,9 @@ const httpServer = createServer((req, res) => {
     }
 
     // Serve static files from public/ directory
-    if (!parsedUrl.pathname.startsWith("/_next/") && !parsedUrl.pathname.startsWith("/api/")) {
+    if (parsedUrl.pathname && !parsedUrl.pathname.startsWith("/_next/") && !parsedUrl.pathname.startsWith("/api/")) {
       const filePath = join(process.cwd(), "public", parsedUrl.pathname);
-      if (existsSync(filePath)) {
+      if (existsSync(filePath) && !existsSync(filePath + "/index.html") && existsSync(filePath) && !(require("fs").statSync(filePath).isDirectory())) {
         try {
           const ext = extname(filePath).toLowerCase();
           const contentType = MIME_TYPES[ext] || "application/octet-stream";
@@ -52,10 +52,7 @@ const httpServer = createServer((req, res) => {
       }
     }
 
-    handle(req, res, {
-      ...parsedUrl,
-      query: Object.fromEntries(parsedUrl.searchParams),
-    });
+    handle(req, res, parsedUrl);
   } catch (err) {
     console.error("[Server] Error:", err);
     res.writeHead(500);
