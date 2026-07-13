@@ -1821,8 +1821,8 @@ video {
   text-align: right;
 }
 
-.font-arabic {
-  font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+.font-sans {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .text-2xl {
