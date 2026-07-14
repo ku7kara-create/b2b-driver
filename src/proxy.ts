@@ -4,47 +4,31 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
-    const { pathname } = req.nextUrl;
+    const pathname = req.nextUrl.pathname;
 
-    const publicPaths = [
-      "/",
-      "/login",
-      "/register/customer",
-      "/register/driver",
-    ];
-    const isPublic = publicPaths.some(
-      (p) => pathname === p || pathname.startsWith(p),
-    );
-
-    if (isPublic) {
-      return NextResponse.next();
-    }
-
-    if (!token) {
+    if (pathname.startsWith("/admin") && token?.role !== "admin") {
       return NextResponse.redirect(new URL("/login", req.url));
     }
-
-    const role = token.role as string;
-
-    if (pathname.startsWith("/admin") && role !== "admin") {
-      return NextResponse.redirect(new URL("/", req.url));
+    if (pathname.startsWith("/driver") && token?.role !== "driver") {
+      return NextResponse.redirect(new URL("/login", req.url));
     }
-
-    if (pathname.startsWith("/driver") && role !== "driver") {
-      return NextResponse.redirect(new URL("/", req.url));
+    if (pathname.startsWith("/customer") && token?.role !== "customer") {
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
     return NextResponse.next();
   },
   {
-    callbacks: {
-      authorized: () => true,
+    pages: {
+      signIn: "/login",
     },
   },
 );
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|tailwind\\.css|.*\\.png|.*\\.svg|.*\\.jpg).*)",
+    "/admin/:path*",
+    "/driver/:path*",
+    "/customer/:path*",
   ],
 };
