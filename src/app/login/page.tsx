@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -29,8 +29,11 @@ export default function LoginPage() {
     if (result?.error) {
       setError("رقم الهاتف أو كلمة المرور غير صحيحة");
     } else if (result?.ok) {
-      router.push("/");
-      router.refresh();
+      const session = await getSession();
+      const role = (session?.user as any)?.role;
+      if (role === "admin") router.push("/admin/dashboard");
+      else if (role === "driver") router.push("/driver/dashboard");
+      else router.push("/customer/dashboard");
     }
   }
 
