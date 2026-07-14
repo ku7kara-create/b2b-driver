@@ -13,9 +13,10 @@ async function createNotification(userId: string, type: string, title: string, b
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: paramId } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -27,7 +28,7 @@ export async function POST(
       return NextResponse.json({ error: "حالة غير صالحة" }, { status: 400 });
     }
 
-    const trip = await prisma.trip.findUnique({ where: { id: params.id } });
+    const trip = await prisma.trip.findUnique({ where: { id: paramId } });
     if (!trip) {
       return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
     }
@@ -45,7 +46,7 @@ export async function POST(
     if (status === "completed") updates.completedAt = new Date();
 
     await prisma.trip.update({
-      where: { id: params.id },
+      where: { id: paramId },
       data: updates,
     });
 
@@ -55,7 +56,7 @@ export async function POST(
         "trip_started",
         "بدأت الرحلة",
         "السائق في طريقه إليك",
-        JSON.stringify({ tripId: params.id }),
+        JSON.stringify({ tripId: paramId }),
       );
     }
 
@@ -70,7 +71,7 @@ export async function POST(
         "trip_completed",
         "اكتملت الرحلة",
         "تم إتمام الرحلة بنجاح. يرجى تقييم السائق.",
-        JSON.stringify({ tripId: params.id }),
+        JSON.stringify({ tripId: paramId }),
       );
     }
 

@@ -5,16 +5,17 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: paramId } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
 
     const bid = await prisma.bid.findUnique({
-      where: { id: params.id },
+      where: { id: paramId },
       include: { trip: true },
     });
 
@@ -28,7 +29,7 @@ export async function POST(
     }
 
     await prisma.bid.update({
-      where: { id: params.id },
+      where: { id: paramId },
       data: { status: "rejected" },
     });
 

@@ -5,16 +5,17 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: paramId } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
 
     const trip = await prisma.trip.findUnique({
-      where: { id: params.id },
+      where: { id: paramId },
     });
 
     if (!trip || trip.customerId !== (session.user as any).id) {
@@ -22,7 +23,7 @@ export async function GET(
     }
 
     const bids = await prisma.bid.findMany({
-      where: { tripId: params.id, status: "pending" },
+      where: { tripId: paramId, status: "pending" },
       include: {
         driver: {
           include: { user: { select: { name: true, phone: true } } },

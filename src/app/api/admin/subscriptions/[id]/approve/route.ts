@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: paramId } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user || (session.user as any).role !== "admin") {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
@@ -20,7 +21,7 @@ export async function POST(
 
     await prisma.$transaction([
       prisma.subscription.update({
-        where: { id: params.id },
+        where: { id: paramId },
         data: { status: "paid", paidAt: new Date(), expiresAt: expiryDate },
       }),
       prisma.driver.update({

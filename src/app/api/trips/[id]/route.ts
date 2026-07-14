@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id: paramId } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -16,7 +17,7 @@ export async function GET(
     const userId = (session.user as any).id;
 
     const trip = await prisma.trip.findUnique({
-      where: { id: params.id },
+      where: { id: paramId },
       include: {
         customer: { select: { name: true, phone: true } },
         driver: {
