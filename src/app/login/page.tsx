@@ -27,7 +27,11 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("رقم الهاتف أو كلمة المرور غير صحيحة");
+      if (result.error.includes("مراجعة") || result.error.includes("PENDING")) {
+        setError("حسابك قيد المراجعة حالياً من قبل الإدارة. سيتم إشعارك فور تفعيل الحساب.");
+      } else {
+        setError("رقم الهاتف أو كلمة المرور غير صحيحة");
+      }
     } else if (result?.ok) {
       const session = await getSession();
       const role = (session?.user as any)?.role;

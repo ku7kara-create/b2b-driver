@@ -20,7 +20,7 @@ export async function POST(
 
     await prisma.user.update({
       where: { id: params.id },
-      data: { role: user.role === "driver" ? "driver" : "customer" },
+      data: { role: user.role === "driver" ? "driver" : "customer", isApproved: true },
     });
 
     return NextResponse.json({ success: true });

@@ -15,6 +15,7 @@ model User {
   phone         String         @unique
   passwordHash  String?
   role          String         @default("customer")
+  isApproved    Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 

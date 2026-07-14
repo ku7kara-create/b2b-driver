@@ -26,6 +26,7 @@ async function main() {
       phone: "+218000000000",
       passwordHash,
       role: "admin",
+      isApproved: true,
     },
   });
 
@@ -36,6 +37,7 @@ async function main() {
       phone: "+218000000001",
       passwordHash,
       role: "customer",
+      isApproved: true,
     },
   });
 
@@ -46,6 +48,7 @@ async function main() {
       phone: "+218912345678",
       passwordHash,
       role: "driver",
+      isApproved: true,
     },
   });
 

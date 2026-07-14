@@ -140,6 +140,7 @@ export default function CustomerDashboardPage() {
           { href: "/customer/dashboard", icon: "home", label: "الرئيسية" },
           { href: "/customer/request", icon: "add_circle", label: "طلب جديد" },
           { href: "/customer/bids", icon: "local_shipping", label: "الطلبات" },
+          { href: "/customer/profile", icon: "person", label: "حسابي" },
         ].map((it) => (
           <Link key={it.href} href={it.href} className="flex flex-col items-center text-gray-400 hover:text-[#E05A2B] px-3 py-1">
             <span className="material-symbols-outlined">{it.icon}</span>

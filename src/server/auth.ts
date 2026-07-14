@@ -24,6 +24,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (!user.isApproved) {
+          throw new Error("حسابك قيد المراجعة حالياً من قبل الإدارة");
+        }
+
         const isValid = await bcrypt.compare(
           credentials.password,
           user.passwordHash,
