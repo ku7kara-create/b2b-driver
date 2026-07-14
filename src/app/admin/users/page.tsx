@@ -42,8 +42,8 @@ export default function AdminUsersPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#091426]">المستخدمين</h1>
-        <p className="text-sm text-gray-500 mt-1">{users.length} زبون مسجل</p>
+        <h1 className="text-2xl font-bold text-[#091426]">إدارة المستخدمين (الزبائن)</h1>
+        <p className="text-sm text-gray-500 mt-1">عدد المشتركين: {users.length} زبون</p>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
