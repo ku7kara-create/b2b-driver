@@ -28,6 +28,15 @@ export async function GET(
       return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
     }
 
+    if (trip.driverId && trip.driverId !== driver?.id) {
+      return NextResponse.json({
+        trip: {
+          ...trip,
+          customer: null,
+        },
+      });
+    }
+
     return NextResponse.json({ trip });
   } catch (error) {
     console.error("[Driver Trip GET] Error:", error);

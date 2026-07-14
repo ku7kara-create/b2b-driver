@@ -13,6 +13,20 @@ export async function POST(
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
 
+    const bid = await prisma.bid.findUnique({
+      where: { id: params.id },
+      include: { trip: true },
+    });
+
+    if (!bid) {
+      return NextResponse.json({ error: "العرض غير موجود" }, { status: 404 });
+    }
+
+    const userId = (session.user as any).id;
+    if (bid.trip.customerId !== userId && bid.driverId !== userId) {
+      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+    }
+
     await prisma.bid.update({
       where: { id: params.id },
       data: { status: "rejected" },

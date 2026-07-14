@@ -22,6 +22,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!["customer", "driver"].includes(role)) {
+      return NextResponse.json(
+        { error: "نوع الحساب غير صالح" },
+        { status: 400 },
+      );
+    }
+
     if (password.length < 6) {
       return NextResponse.json(
         { error: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" },
