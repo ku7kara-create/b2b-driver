@@ -94,14 +94,31 @@ export default function LoginPage() {
             <a href="#" className="text-sm font-medium text-[#E05A2B] hover:underline">نسيت كلمة المرور؟</a>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full h-14 bg-[#E05A2B] text-white rounded-lg font-bold text-lg"
-          >
-            {loading ? "جاري الدخول..." : "تسجيل الدخول"}
-          </button>
         </form>
+
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => {
+            const form = document.querySelector("form") as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          style={{
+            width: "100%",
+            height: "56px",
+            backgroundColor: "#E05A2B",
+            color: "white",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            fontSize: "18px",
+            marginTop: "16px",
+            border: "none",
+            cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.6 : 1,
+          }}
+        >
+          {loading ? "جاري الدخول..." : "تسجيل الدخول"}
+        </button>
 
         <p className="mt-8 text-center text-base text-gray-500">
           ليس لديك حساب؟{" "}
