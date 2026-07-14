@@ -123,19 +123,24 @@ export default function AdminDriversPage() {
                              <span className="text-green-600">متبقي {days} يوم</span>)
                           : "—"}
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => toggleDriver(d.id, d.subscriptionStatus)}
-                          disabled={actionId === d.id}
-                          className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                            d.subscriptionStatus === "active"
-                              ? "bg-red-100 text-red-700 hover:bg-red-200"
-                              : "bg-[#E05A2B] text-white hover:brightness-110"
-                          } disabled:opacity-50`}
-                        >
-                          {actionId === d.id ? "جاري..." :
-                           d.subscriptionStatus === "active" ? "تعطيل" : "تفعيل"}
-                        </button>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        {d.subscriptionStatus === "active" ? (
+                          <button
+                            onClick={() => toggleDriver(d.id, d.subscriptionStatus)}
+                            disabled={actionId === d.id}
+                            className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold rounded-lg transition-all cursor-pointer text-xs"
+                          >
+                            {actionId === d.id ? "جاري..." : "تعطيل الحساب"}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => toggleDriver(d.id, d.subscriptionStatus)}
+                            disabled={actionId === d.id}
+                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-sm block text-xs"
+                          >
+                            {actionId === d.id ? "جاري..." : "تفعيل الحساب"}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
