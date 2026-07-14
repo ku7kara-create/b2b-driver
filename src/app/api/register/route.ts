@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (role === "driver") {
-      await prisma.driver.create({
+      const driver = await prisma.driver.create({
         data: {
           userId: user.id,
           subscriptionStatus: "inactive",
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       if (vehicleType) {
         await prisma.vehicle.create({
           data: {
-            driverId: user.id,
+            driverId: driver.id,
             type: vehicleType,
           },
         });

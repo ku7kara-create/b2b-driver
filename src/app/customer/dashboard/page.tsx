@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Trip {
   id: string;
@@ -11,133 +11,139 @@ interface Trip {
   status: string;
   agreedPrice: number;
   createdAt: string;
-  driver?: { user: { name: string }; rating: number } | null;
 }
+
+const SERVICE_LABELS: Record<string, string> = {
+  car: "سيارة خاصة", porter: "بورتر", tow_truck: "ساحبة",
+};
 
 export default function CustomerDashboardPage() {
   const [activeTrip, setActiveTrip] = useState<Trip | null>(null);
   const [recentTrips, setRecentTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const activeRes = await fetch("/api/trips?status=active");
-        if (activeRes.ok) {
-          const data = await activeRes.json();
-          setActiveTrip(data.activeTrip || null);
-        }
-
-        const allRes = await fetch("/api/trips");
-        if (allRes.ok) {
-          const data = await allRes.json();
-          setRecentTrips((data.trips || []).slice(0, 5));
-        }
-      } catch {}
-      setLoading(false);
-    }
-    load();
+  const fetchData = useCallback(async () => {
+    try {
+      const [activeRes, allRes] = await Promise.all([
+        fetch("/api/trips?status=active"),
+        fetch("/api/trips"),
+      ]);
+      if (activeRes.ok) {
+        const d = await activeRes.json();
+        setActiveTrip(d.activeTrip || null);
+      }
+      if (allRes.ok) {
+        const d = await allRes.json();
+        setRecentTrips((d.trips || []).slice(0, 5));
+      }
+    } catch {}
   }, []);
 
-  const SERVICE_LABELS: Record<string, string> = {
-    car: "سيارة خاصة", porter: "بورتر", tow_truck: "ساحبة",
-  };
+  useEffect(() => {
+    fetchData().finally(() => setLoading(false));
+  }, [fetchData]);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <header className="bg-surface sticky top-0 z-50 border-b border-outline-variant flex flex-row-reverse justify-between items-center w-full px-4 h-16">
+    <div className="min-h-screen bg-[#F9F9F9] pb-20">
+      <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse justify-between items-center w-full px-4 h-16">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white">
+          <div className="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-white">
             <span className="material-symbols-outlined">person</span>
           </div>
-          <p className="text-sm font-medium text-on-surface">مرحباً</p>
+          <p className="text-sm font-medium text-gray-700">مرحباً</p>
         </div>
-        <h1 className="text-xl font-bold text-secondary">B2B Driver</h1>
+        <h1 className="text-xl font-bold text-[#E05A2B]">B2B Driver</h1>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 mt-6 space-y-6">
-        {activeTrip && (
-          <section>
-            <h2 className="text-xl font-semibold text-primary mb-4">الطلب الحالي</h2>
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-md flex flex-col md:flex-row">
-              <div className="md:w-2/3 h-48 md:h-64 relative bg-surface-variant flex items-center justify-center">
-                <span className="material-symbols-outlined text-6xl text-outline">map</span>
-                <div className="absolute bottom-4 right-4 bg-surface px-3 py-1 rounded-lg shadow-lg flex items-center gap-2">
-                  <span className="w-3 h-3 bg-secondary rounded-full animate-pulse"></span>
-                  <p className="text-sm">{activeTrip.status === "accepted" ? "السائق في الطريق" : "بانتظار العروض"}</p>
-                </div>
-              </div>
-              <div className="md:w-1/3 p-6 flex flex-col justify-between bg-primary-container text-white">
-                <div>
-                  <div className="flex justify-between items-start">
-                    <div><p className="text-xs text-on-primary-container mb-1">رقم الطلب</p><p className="text-xl font-bold">#{activeTrip.id.slice(-8)}</p></div>
-                    <span className="bg-secondary px-2 py-1 rounded-full text-xs font-bold">{activeTrip.status === "accepted" ? "نشط" : "معلق"}</span>
+      <main className="max-w-lg mx-auto px-4 mt-4 space-y-6">
+        {loading ? (
+          <div className="text-center py-12 text-gray-400">جاري التحميل...</div>
+        ) : (
+          <>
+            {activeTrip && (
+              <section>
+                <h2 className="text-lg font-semibold text-[#091426] mb-3">الطلب الحالي</h2>
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="h-40 bg-gray-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-6xl text-gray-300">map</span>
                   </div>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-2"><span className="material-symbols-outlined text-secondary-container text-lg">local_shipping</span><span className="text-sm">{SERVICE_LABELS[activeTrip.serviceType]}</span></div>
-                    <div className="flex items-center gap-2"><span className="material-symbols-outlined text-secondary-container text-lg">schedule</span><span className="text-sm">{activeTrip.status === "accepted" ? "قيد التنفيذ" : "بانتظار العروض"}</span></div>
+                  <div className="p-4 bg-[#1e293b] text-white">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">رقم الطلب</p>
+                        <p className="text-lg font-bold">#{activeTrip.id.slice(-8)}</p>
+                      </div>
+                      <span className="bg-[#E05A2B] px-2 py-1 rounded-full text-xs font-bold">
+                        {activeTrip.status === "accepted" ? "نشط" : "معلق"}
+                      </span>
+                    </div>
+                    <div className="mt-3 space-y-1 text-sm">
+                      <div className="flex items-center gap-2"><span className="material-symbols-outlined text-lg">local_shipping</span>{SERVICE_LABELS[activeTrip.serviceType]}</div>
+                    </div>
+                    <Link
+                      href={activeTrip.status === "completed" ? `/customer/trip/${activeTrip.id}` : activeTrip.status === "accepted" ? `/customer/trip/${activeTrip.id}` : `/customer/bids/${activeTrip.id}`}
+                      className="block w-full bg-[#E05A2B] text-white text-center font-bold py-2 rounded-lg mt-4"
+                    >
+                      {activeTrip.status === "accepted" ? "تتبع" : "عرض العروض"}
+                    </Link>
                   </div>
                 </div>
-                <Link href={activeTrip.status === "completed" ? `/customer/trip/${activeTrip.id}` : activeTrip.status === "accepted" ? `/customer/trip/${activeTrip.id}` : `/customer/bids/${activeTrip.id}`} className="w-full bg-secondary text-white font-bold py-3 rounded-lg text-center block mt-4">
-                  {activeTrip.status === "accepted" ? "تتبع" : "عرض العروض"}
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
+              </section>
+            )}
 
-        <section>
-          <h2 className="text-xl font-semibold text-primary mb-4">طلب خدمة جديدة</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { type: "car", label: "سيارة خاصة", icon: "directions_car", desc: "توصيل سريع للطرود والمستندات." },
-              { type: "porter", label: "بورتر", icon: "local_shipping", desc: "نقل شحنات متوسطة وكبيرة بأمان." },
-              { type: "tow_truck", label: "ساحبة", icon: "precision_manufacturing", desc: "سحب مركبات معطلة 24/7." },
-            ].map((svc) => (
-              <Link key={svc.type} href={`/customer/request?type=${svc.type}`} className="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl hover:shadow-lg transition-all group">
-                <div className="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-4 group-hover:bg-secondary-container transition-colors">
-                  <span className="material-symbols-outlined text-3xl text-secondary group-hover:text-white">{svc.icon}</span>
-                </div>
-                <h3 className="text-lg font-semibold text-primary mb-1">{svc.label}</h3>
-                <p className="text-sm text-on-surface-variant">{svc.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
+            <section>
+              <h2 className="text-lg font-semibold text-[#091426] mb-3">طلب خدمة جديدة</h2>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { type: "car", label: "سيارة خاصة", icon: "directions_car" },
+                  { type: "porter", label: "بورتر", icon: "local_shipping" },
+                  { type: "tow_truck", label: "ساحبة", icon: "precision_manufacturing" },
+                ].map((svc) => (
+                  <Link key={svc.type} href={`/customer/request?type=${svc.type}`}
+                    className="bg-white border border-gray-200 p-4 rounded-xl text-center hover:border-[#E05A2B] transition-all group"
+                  >
+                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-orange-50">
+                      <span className="material-symbols-outlined text-[#E05A2B]">{svc.icon}</span>
+                    </div>
+                    <span className="text-sm font-medium text-[#091426]">{svc.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
 
-        {recentTrips.length > 0 && (
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-primary">آخر الرحلات</h2>
-              <Link href="/customer/bids" className="text-secondary text-sm font-medium hover:underline">عرض الكل</Link>
-            </div>
-            <div className="space-y-2">
-              {recentTrips.map((trip) => (
-                <Link key={trip.id} href={`/customer/trip/${trip.id}`} className="bg-white border border-outline-variant rounded-lg p-4 flex justify-between items-center hover:border-secondary transition-colors block">
-                  <div>
-                    <h3 className="font-bold text-primary">{SERVICE_LABELS[trip.serviceType]}</h3>
-                    <p className="text-sm text-on-surface-variant">{trip.pickupAddress}</p>
-                  </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-bold ${trip.status === "completed" ? "bg-green-100 text-green-700" : trip.status === "accepted" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}>
-                    {trip.status === "completed" ? "مكتمل" : trip.status === "accepted" ? "نشط" : "معلق"}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
+            {recentTrips.length > 0 && (
+              <section>
+                <h2 className="text-lg font-semibold text-[#091426] mb-3">آخر الرحلات</h2>
+                <div className="space-y-2">
+                  {recentTrips.map((trip) => (
+                    <Link key={trip.id} href={`/customer/trip/${trip.id}`}
+                      className="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center hover:border-[#E05A2B] transition-colors block"
+                    >
+                      <div>
+                        <h3 className="font-bold text-[#091426] text-sm">{SERVICE_LABELS[trip.serviceType]}</h3>
+                        <p className="text-xs text-gray-500 truncate max-w-[200px]">{trip.pickupAddress}</p>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full font-bold ${trip.status === "completed" ? "bg-green-100 text-green-700" : trip.status === "accepted" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}>
+                        {trip.status === "completed" ? "مكتمل" : trip.status === "accepted" ? "نشط" : "معلق"}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
       </main>
 
-      <nav className="bg-surface-container-lowest border-t border-outline-variant fixed bottom-0 w-full z-50 shadow-md flex flex-row-reverse justify-around items-center py-2">
+      <nav className="fixed bottom-0 left-0 w-full z-50 bg-white border-t border-gray-200 flex flex-row-reverse justify-around items-center py-2 shadow-sm">
         {[
-          { href: "/customer/dashboard", icon: "home", label: "الرئيسية", active: true },
-          { href: "/customer/bids", icon: "local_shipping", label: "الطلبات" },
+          { href: "/customer/dashboard", icon: "home", label: "الرئيسية" },
           { href: "/customer/request", icon: "add_circle", label: "طلب جديد" },
-          { href: "/login", icon: "person", label: "الحساب" },
-        ].map((item) => (
-          <Link key={item.href} href={item.href} className={`flex flex-col items-center justify-center px-3 py-1 rounded-xl transition-colors ${item.active ? "text-secondary font-bold" : "text-on-surface-variant hover:text-secondary-container"}`}>
-            <span className="material-symbols-outlined">{item.icon}</span>
-            <span className="text-xs mt-1">{item.label}</span>
+          { href: "/customer/bids", icon: "local_shipping", label: "الطلبات" },
+        ].map((it) => (
+          <Link key={it.href} href={it.href} className="flex flex-col items-center text-gray-400 hover:text-[#E05A2B] px-3 py-1">
+            <span className="material-symbols-outlined">{it.icon}</span>
+            <span className="text-xs mt-1">{it.label}</span>
           </Link>
         ))}
       </nav>
