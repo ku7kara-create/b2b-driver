@@ -26,10 +26,9 @@ export default function CustomerProfilePage() {
         </div>
 
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full bg-red-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2"
+          onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+          className="w-full max-w-xs py-3.5 mt-6 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all shadow-md block text-center cursor-pointer relative z-50"
         >
-          <span className="material-symbols-outlined">logout</span>
           تسجيل الخروج
         </button>
       </main>
