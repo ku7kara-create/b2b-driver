@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 interface Stats { users: number; drivers: number; trips: number; completedTrips: number; revenue: number; }
-interface PendingUser { id: string; name: string; phone: string; role: string; createdAt: string; driver?: { subscriptionStatus: string; id: string } | null; }
+interface PendingUser { id: string; name: string; phone: string; role: string; createdAt: string; driver?: { id: string; subscriptionStatus: string; idNumber: string | null } | null; }
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -40,86 +40,109 @@ export default function AdminDashboardPage() {
 
   async function activateSubscription(driverId: string, userId: string) {
     try {
-      const res = await fetch("/api/admin/subscriptions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ driverId, userId, amount: 150 }),
-      });
-      if (res.ok) {
-        setPendingUsers((prev) => prev.map((u) => u.id === userId ? { ...u, driver: { ...u.driver!, subscriptionStatus: "active", id: driverId } } : u));
-      }
+      await fetch("/api/admin/subscriptions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ driverId, userId, amount: 150 }) });
+      setPendingUsers((prev) => prev.map((u) => u.id === userId ? { ...u, driver: { ...u.driver!, subscriptionStatus: "active", id: driverId } } : u));
     } catch {}
   }
+
+  const driversWithPendingSub = pendingUsers.filter((u) => u.role === "driver" && u.driver?.subscriptionStatus !== "active");
+  const pendingRegistrations = pendingUsers.filter((u) => !driversWithPendingSub.find((d) => d.id === u.id));
 
   if (loading) return <div className="text-center py-16 text-gray-400">جاري التحميل...</div>;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#091426]">لوحة التحكم</h1>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: "المستخدمين", value: stats?.users || 0, color: "bg-blue-50 text-blue-600" },
-          { label: "السائقين", value: stats?.drivers || 0, color: "bg-orange-50 text-orange-600" },
-          { label: "الرحلات", value: stats?.trips || 0, color: "bg-purple-50 text-purple-600" },
-          { label: "الإيرادات LYD", value: (stats?.revenue || 0).toFixed(0), color: "bg-green-50 text-green-600" },
-        ].map((s) => (
-          <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-gray-500 mb-1">{s.label}</p>
-            <p className="text-2xl font-bold text-[#091426]">{s.value}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2 bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-500">طلبات معلقة</p>
+            <p className="text-3xl font-bold text-[#E05A2B]">{pendingUsers.length}</p>
           </div>
-        ))}
+          <div className="bg-orange-50 p-3 rounded-full">
+            <span className="material-symbols-outlined text-[#E05A2B] text-2xl">pending_actions</span>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 space-y-1">
+          <span className="material-symbols-outlined text-blue-500">local_shipping</span>
+          <p className="text-xs text-gray-500">سائقين نشطين</p>
+          <p className="text-xl font-bold text-[#091426]">{stats?.drivers || 0}</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 space-y-1">
+          <span className="material-symbols-outlined text-red-500">payments</span>
+          <p className="text-xs text-gray-500">دفعات معلقة</p>
+          <p className="text-xl font-bold text-[#091426]">{driversWithPendingSub.length}</p>
+        </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-lg font-bold text-[#091426]">طلبات بانتظار المراجعة</h3>
-          {pendingUsers.length > 0 && (
-            <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">{pendingUsers.length} جديد</span>
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-[#091426]">طلبات التسجيل الجديدة</h2>
+          {pendingRegistrations.length > 0 && (
+            <span className="text-xs text-[#E05A2B] bg-orange-50 px-2 py-1 rounded-full font-bold">{pendingRegistrations.length} طلبات</span>
           )}
         </div>
-        {pendingUsers.length === 0 ? (
-          <div className="p-12 text-center text-gray-400">لا توجد طلبات معلقة</div>
-        ) : (
-          <table className="w-full text-right text-sm">
-            <thead className="bg-gray-50 text-gray-500 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3">الاسم</th>
-                <th className="px-4 py-3">الهاتف</th>
-                <th className="px-4 py-3">الدور</th>
-                <th className="px-4 py-3">التاريخ</th>
-                <th className="px-4 py-3 text-center">إجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {pendingUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-[#091426]">{user.name}</td>
-                  <td className="px-4 py-3 text-gray-500" dir="ltr">{user.phone}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
-                      {user.role === "driver" ? "سائق" : "زبون"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(user.createdAt).toLocaleDateString("ar")}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-center gap-2">
-                      {user.role === "driver" && user.driver?.subscriptionStatus !== "active" && (
-                        <button onClick={() => activateSubscription(user.driver?.id || "", user.id)}
-                          className="bg-[#E05A2B] text-white px-3 py-1.5 rounded-lg text-xs font-bold">
-                          تفعيل
-                        </button>
-                      )}
-                      <button onClick={() => approveUser(user.id)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">موافقة</button>
-                      <button onClick={() => rejectUser(user.id)} className="bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-xs font-bold">رفض</button>
+        <div className="space-y-3">
+          {pendingRegistrations.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">لا توجد طلبات تسجيل جديدة</div>
+          ) : (
+            pendingRegistrations.map((user) => (
+              <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gray-500">{user.role === "driver" ? "local_shipping" : "person"}</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-[#091426]">{user.name} ({user.role === "driver" ? "سائق" : "زبون"})</p>
+                    <p className="text-xs text-gray-500" dir="ltr">{user.phone}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => approveUser(user.id)} className="flex-1 bg-[#E05A2B] text-white font-bold py-2.5 rounded-lg text-sm">موافقة</button>
+                  <button onClick={() => rejectUser(user.id)} className="flex-1 bg-gray-100 text-gray-600 font-bold py-2.5 rounded-lg text-sm">رفض</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-[#091426]">تفعيل الاشتراكات</h2>
+        </div>
+        <div className="space-y-3">
+          {driversWithPendingSub.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">لا توجد اشتراكات معلقة</div>
+          ) : (
+            driversWithPendingSub.map((user) => (
+              <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm border-r-4 border-r-[#E05A2B] relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-[#E05A2B] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">مدفوع</div>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex gap-3">
+                    <div className="w-12 h-12 rounded-full border-2 border-[#E05A2B] p-0.5">
+                      <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-gray-600">person</span>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+                    <div>
+                      <p className="font-bold text-[#091426]">{user.name}</p>
+                      <p className="text-xs text-gray-500" dir="ltr">{user.phone}</p>
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs text-gray-500">قيمة الاشتراك</p>
+                    <p className="font-bold text-[#E05A2B]">150.00 LYD</p>
+                  </div>
+                </div>
+                <button onClick={() => activateSubscription(user.driver?.id || "", user.id)} className="w-full bg-[#091426] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined">verified_user</span>
+                  تفعيل الحساب
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
     </div>
   );
 }
