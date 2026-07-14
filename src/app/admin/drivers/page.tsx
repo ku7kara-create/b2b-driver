@@ -128,7 +128,7 @@ export default function AdminDriversPage() {
                           <button
                             onClick={() => toggleDriver(d.id, d.subscriptionStatus)}
                             disabled={actionId === d.id}
-                            className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold rounded-lg transition-all cursor-pointer text-xs"
+                            style={{ backgroundColor: "#FEE2E2", color: "#B91C1C", fontWeight: "bold", padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "12px" }}
                           >
                             {actionId === d.id ? "جاري..." : "تعطيل الحساب"}
                           </button>
@@ -136,7 +136,7 @@ export default function AdminDriversPage() {
                           <button
                             onClick={() => toggleDriver(d.id, d.subscriptionStatus)}
                             disabled={actionId === d.id}
-                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-sm block text-xs"
+                            style={{ backgroundColor: "#059669", color: "white", fontWeight: "bold", padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "12px", boxShadow: "0 1px 2px rgba(0,0,0,0.1)", display: "block" }}
                           >
                             {actionId === d.id ? "جاري..." : "تفعيل الحساب"}
                           </button>
