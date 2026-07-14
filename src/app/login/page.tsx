@@ -35,20 +35,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-sm flex flex-col">
-        <div className="flex justify-center mb-8">
-          <div className="w-24 h-24 bg-white rounded-xl shadow-sm flex items-center justify-center p-4 border border-gray-200">
-            <img
-              src="https://lh3.googleusercontent.com/aida/AP1WRLtYZ5jwWQMUVAxkDRRChuMLOCDeF-xwRUFTgHgyUYObUK4PgIL4_6QXO5Msj_jG18X26Mh_VaXtmRmQsRfttJBd9MfBjyLH51tp11939CH2u9ekTG3yJvvcOstol1OREqMvUHj_DMVubJj6J-pQ2BFe007NItoZOeh8oH5nA-FBT0NDGXFQpCxXe5jVLvT6RBpjLpd932S3HoWVqlNpB8Ae2hi1dYXxSdc73xi58PSIc2LHOQfRMfBz4_hL"
-              alt="B2B Driver"
-              className="w-full h-full object-contain"
-            />
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col px-4 pt-8">
+      <div className="w-full max-w-sm mx-auto">
+        <div className="mb-6 text-center">
+          <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-gray-100 flex items-center justify-center">
+            <span className="text-3xl">🚚</span>
           </div>
+          <h1 className="text-2xl font-bold text-[#091426] mb-1">تسجيل الدخول</h1>
+          <p className="text-sm text-gray-500">مرحباً بك مجدداً في B2B Driver</p>
         </div>
-
-        <h1 className="text-2xl font-semibold text-[#091426] text-center mb-2">تسجيل الدخول</h1>
-        <p className="text-base text-gray-500 text-center mb-8">مرحباً بك مجدداً في B2B Driver</p>
 
         <form onSubmit={handleSubmit} className="space-y-5 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           {error && (
