@@ -25,12 +25,14 @@ export default function CustomerProfilePage() {
           <p className="text-gray-400 text-xs mt-1">زبون</p>
         </div>
 
-        <button
-          onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
-          className="w-full max-w-xs py-3.5 mt-6 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all shadow-md block text-center cursor-pointer relative z-50"
-        >
-          تسجيل الخروج
-        </button>
+        <div className="w-full px-6 mt-8 flex justify-center">
+          <button
+            onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+            className="w-full max-w-md py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-md text-center cursor-pointer text-base"
+          >
+            تسجيل الخروج
+          </button>
+        </div>
       </main>
 
       <nav className="fixed bottom-0 left-0 w-full z-50 bg-white border-t border-gray-200 flex flex-row-reverse justify-around items-center py-2 shadow-sm">
