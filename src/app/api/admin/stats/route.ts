@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -13,6 +13,14 @@ export async function GET() {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const showAll = searchParams.get("all") === "true";
+
+    const where: any = { role: { not: "admin" } };
+    if (!showAll) {
+      where.isApproved = false;
+    }
+
     const [usersCount, driversCount, tripsCount, completedTrips, revenue, pendingUsers] = await Promise.all([
       prisma.user.count(),
       prisma.driver.count(),
@@ -20,7 +28,7 @@ export async function GET() {
       prisma.trip.count({ where: { status: "completed" } }),
       prisma.trip.aggregate({ where: { status: "completed" }, _sum: { agreedPrice: true } }),
       prisma.user.findMany({
-        where: { role: { not: "admin" } },
+        where,
         include: { driver: true },
         orderBy: { createdAt: "desc" },
         take: 50,

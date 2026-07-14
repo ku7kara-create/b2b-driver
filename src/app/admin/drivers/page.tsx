@@ -22,7 +22,7 @@ export default function AdminDriversPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/admin/stats");
+        const res = await fetch("/api/admin/stats?all=true");
         if (res.ok) {
           const data = await res.json();
           const allDrivers = (data.pendingUsers || []).filter((u: any) => u.role === "driver" && u.driver);
