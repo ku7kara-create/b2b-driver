@@ -90,16 +90,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 bg-[#E05A2B] text-white rounded-lg font-bold text-lg shadow-sm hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full h-12 mt-6 bg-[#E05A2B] text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all cursor-pointer relative z-50 block"
           >
-            {loading ? (
-              <span className="material-symbols-outlined animate-spin">sync</span>
-            ) : (
-              <>
-                <span>تسجيل الدخول</span>
-                <span className="material-symbols-outlined">login</span>
-              </>
-            )}
+            {loading ? "جاري التحميل..." : "تسجيل الدخول"}
           </button>
         </form>
 
