@@ -40,12 +40,18 @@ export default function LoginPage() {
 
         <div className="flex justify-center mb-8">
           <div className="w-24 h-24 bg-white rounded-xl shadow-sm flex items-center justify-center p-4 border border-gray-200">
-            <span className="text-4xl">🚚</span>
+            <img
+              src="https://lh3.googleusercontent.com/aida/AP1WRLtYZ5jwWQMUVAxkDRRChuMLOCDeF-xwRUFTgHgyUYObUK4PgIL4_6QXO5Msj_jG18X26Mh_VaXtmRmQsRfttJBd9MfBjyLH51tp11939CH2u9ekTG3yJvvcOstol1OREqMvUHj_DMVubJj6J-pQ2BFe007NItoZOeh8oH5nA-FBT0NDGXFQpCxXe5jVLvT6RBpjLpd932S3HoWVqlNpB8Ae2hi1dYXxSdc73xi58PSIc2LHOQfRMfBz4_hL"
+              alt="B2B Driver Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
 
-        <h1 className="text-2xl font-semibold text-[#091426] text-center mb-2">تسجيل الدخول</h1>
-        <p className="text-base text-gray-500 text-center mb-8">مرحباً بك مجدداً في B2B Driver</p>
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-semibold text-[#091426] mb-1">تسجيل الدخول</h1>
+          <p className="text-base text-gray-500">مرحباً بك مجدداً في B2B Driver</p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
           {error && (
