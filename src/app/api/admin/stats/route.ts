@@ -6,7 +6,10 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || (session.user as any).role !== "admin") {
+    if (!session?.user) {
+      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    }
+    if ((session.user as any).role !== "admin") {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
