@@ -42,7 +42,7 @@ export default function CustomerRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.fullName,
-          phone: `+966${form.phone}`,
+          phone: `+218${form.phone}`,
           password: form.password,
           role: "customer",
         }),
@@ -133,7 +133,7 @@ export default function CustomerRegisterPage() {
               <div className="flex gap-2" dir="ltr">
                 <div className="relative w-28 shrink-0">
                   <select className="w-full pl-1 pr-8 h-12 bg-surface-container-lowest border border-outline-variant rounded-lg appearance-none focus:outline-none focus:border-secondary-container text-base">
-                    <option>+966</option>
+                    <option>+218</option>
                   </select>
                   <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-sm">
                     expand_more
@@ -142,7 +142,7 @@ export default function CustomerRegisterPage() {
                 <input
                   type="tel"
                   className="flex-1 px-3 h-12 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-secondary-container transition-all text-base text-left"
-                  placeholder="50 000 0000"
+                  placeholder="91 000 0000"
                   value={form.phone}
                   onChange={(e) => updateField("phone", e.target.value)}
                   required

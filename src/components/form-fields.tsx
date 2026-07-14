@@ -120,12 +120,12 @@ export function PhoneInput({ value, onChange }: PhoneInputProps) {
         dir="ltr"
       >
         <div className="flex items-center gap-1 px-3 border-r border-outline-variant h-12 shrink-0">
-          <span className="text-sm font-medium text-primary">+966</span>
+            <span className="text-sm font-medium text-primary">+218</span>
         </div>
         <input
           type="tel"
           className="w-full h-12 px-3 bg-transparent border-none focus:ring-0 text-base text-on-surface text-left placeholder:text-on-surface-variant/50"
-          placeholder="5xxxxxxxx"
+          placeholder="91xxxxxxx"
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           onFocus={() => setFocused(true)}

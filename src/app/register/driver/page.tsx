@@ -70,7 +70,7 @@ export default function DriverRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.fullName,
-          phone: `+966${form.phone}`,
+          phone: `+218${form.phone}`,
           password: form.password,
           role: "driver",
           idNumber: form.idNumber,
@@ -165,7 +165,7 @@ export default function DriverRegisterPage() {
                   </span>
                   <input
                     type="tel"
-                    placeholder="5XXXXXXXX"
+                    placeholder="91XXXXXXXX"
                     className="w-full pr-10 pl-16 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base text-left focus:outline-none focus:border-secondary-container transition-all"
                     dir="ltr"
                     value={form.phone}
@@ -173,7 +173,7 @@ export default function DriverRegisterPage() {
                     required
                   />
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-primary border-r border-outline-variant pr-2 text-sm" dir="ltr">
-                    +966
+                    +218
                   </div>
                 </div>
               </div>

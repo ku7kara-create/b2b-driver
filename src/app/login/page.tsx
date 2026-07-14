@@ -19,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
 
     const result = await signIn("credentials", {
-      phone: `+966${phone}`,
+      phone: `+218${phone}`,
       password,
       redirect: false,
     });
@@ -58,11 +58,11 @@ export default function LoginPage() {
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">رقم الهاتف</label>
             <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#E05A2B] focus-within:ring-1 focus-within:ring-[#E05A2B] transition-all" dir="ltr">
-              <span className="px-3 border-r border-gray-300 text-sm text-gray-700">+966</span>
+              <span className="px-3 border-r border-gray-300 text-sm text-gray-700">+218</span>
               <input
                 type="tel"
                 className="w-full h-12 px-3 bg-transparent border-none focus:ring-0 text-base text-left"
-                placeholder="5xxxxxxxx"
+                placeholder="91xxxxxxx"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
