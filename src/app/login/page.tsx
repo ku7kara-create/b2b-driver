@@ -35,29 +35,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col px-4 pt-8">
-      <div className="w-full max-w-sm mx-auto">
-        <div className="mb-6 text-center">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-gray-100 flex items-center justify-center">
-            <span className="text-3xl">🚚</span>
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-[420px] flex flex-col">
+
+        <div className="flex justify-center mb-8">
+          <div className="w-24 h-24 bg-white rounded-xl shadow-sm flex items-center justify-center p-4 border border-gray-200">
+            <span className="text-4xl">🚚</span>
           </div>
-          <h1 className="text-2xl font-bold text-[#091426] mb-1">تسجيل الدخول</h1>
-          <p className="text-sm text-gray-500">مرحباً بك مجدداً في B2B Driver</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h1 className="text-2xl font-semibold text-[#091426] text-center mb-2">تسجيل الدخول</h1>
+        <p className="text-base text-gray-500 text-center mb-8">مرحباً بك مجدداً في B2B Driver</p>
+
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-200">
           {error && (
             <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm text-center">{error}</div>
           )}
 
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">رقم الهاتف</label>
-            <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#E05A2B] focus-within:ring-1 focus-within:ring-[#E05A2B] transition-all" dir="ltr">
-              <span className="px-3 border-r border-gray-300 text-sm text-gray-700">+218</span>
+            <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#E05A2B] focus-within:ring-1 focus-within:ring-[#E05A2B] transition-all">
               <input
                 type="tel"
-                className="w-full h-12 px-3 bg-transparent border-none focus:ring-0 text-base text-left"
-                placeholder="91xxxxxxx"
+                className="w-full h-12 px-4 bg-transparent border-none focus:ring-0 text-base text-left"
+                dir="ltr"
+                placeholder="091xxxxxxx"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
@@ -70,33 +72,56 @@ export default function LoginPage() {
             <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#E05A2B] focus-within:ring-1 focus-within:ring-[#E05A2B] transition-all">
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full h-12 px-3 bg-transparent border-none focus:ring-0 text-base text-right"
+                className="w-full h-12 px-4 bg-transparent border-none focus:ring-0 text-base text-right"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="px-3 text-gray-400 hover:text-gray-600">
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="px-4 text-gray-400 hover:text-gray-600">
                 <span className="material-symbols-outlined">{showPassword ? "visibility_off" : "visibility"}</span>
               </button>
             </div>
           </div>
 
+          <div className="text-right">
+            <a href="#" className="text-sm font-medium text-[#E05A2B] hover:underline">نسيت كلمة المرور؟</a>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 mt-6 bg-[#E05A2B] text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all cursor-pointer relative z-50 block"
+            className="w-full h-14 bg-[#E05A2B] text-white rounded-lg font-bold text-lg shadow-sm hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
-            {loading ? "جاري التحميل..." : "تسجيل الدخول"}
+            {loading ? (
+              "جاري الدخول..."
+            ) : (
+              <>
+                <span>تسجيل الدخول</span>
+                <span className="material-symbols-outlined">login</span>
+              </>
+            )}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-8 text-center text-base text-gray-500">
           ليس لديك حساب؟{" "}
           <Link href="/" className="text-[#E05A2B] font-bold hover:underline">
             إنشاء حساب جديد
           </Link>
         </p>
+
+        <div className="mt-8 flex justify-center gap-6 opacity-40">
+          <div className="flex items-center gap-1">
+            <span className="material-symbols-outlined text-lg">verified_user</span>
+            <span className="text-xs text-gray-500">آمن ومشفر</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="material-symbols-outlined text-lg">public</span>
+            <span className="text-xs text-gray-500">لوجستيات ذكية</span>
+          </div>
+        </div>
+
       </div>
     </div>
   );
