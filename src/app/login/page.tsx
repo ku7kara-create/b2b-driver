@@ -97,16 +97,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 bg-[#E05A2B] text-white rounded-lg font-bold text-lg shadow-sm hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full h-14 bg-[#E05A2B] text-white rounded-lg font-bold text-lg"
           >
-            {loading ? (
-              "جاري الدخول..."
-            ) : (
-              <>
-                <span>تسجيل الدخول</span>
-                <span className="material-symbols-outlined">login</span>
-              </>
-            )}
+            {loading ? "جاري الدخول..." : "تسجيل الدخول"}
           </button>
         </form>
 
