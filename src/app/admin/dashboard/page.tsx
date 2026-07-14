@@ -48,101 +48,103 @@ export default function AdminDashboardPage() {
   const driversWithPendingSub = pendingUsers.filter((u) => u.role === "driver" && u.driver?.subscriptionStatus !== "active");
   const pendingRegistrations = pendingUsers.filter((u) => !driversWithPendingSub.find((d) => d.id === u.id));
 
-  if (loading) return <div className="text-center py-16 text-gray-400">جاري التحميل...</div>;
+  if (loading) return <div className="text-center py-20 text-gray-400">جاري التحميل...</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2 bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-500">طلبات معلقة</p>
-            <p className="text-3xl font-bold text-[#E05A2B]">{pendingUsers.length}</p>
-          </div>
-          <div className="bg-orange-50 p-3 rounded-full">
-            <span className="material-symbols-outlined text-[#E05A2B] text-2xl">pending_actions</span>
-          </div>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-3 space-y-1">
-          <span className="material-symbols-outlined text-blue-500">local_shipping</span>
-          <p className="text-xs text-gray-500">سائقين نشطين</p>
-          <p className="text-xl font-bold text-[#091426]">{stats?.drivers || 0}</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-3 space-y-1">
-          <span className="material-symbols-outlined text-red-500">payments</span>
-          <p className="text-xs text-gray-500">دفعات معلقة</p>
-          <p className="text-xl font-bold text-[#091426]">{driversWithPendingSub.length}</p>
-        </div>
+    <div className="space-y-6 max-w-5xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold text-[#091426]">لوحة التحكم</h1>
+        <p className="text-sm text-gray-500 mt-1">مرحباً بك في لوحة إدارة B2B Driver</p>
       </div>
 
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {[
+          { label: "طلبات معلقة", value: pendingUsers.length, icon: "pending_actions", color: "bg-orange-50 text-[#E05A2B]" },
+          { label: "المستخدمين", value: stats?.users || 0, icon: "group", color: "bg-blue-50 text-blue-600" },
+          { label: "السائقين", value: stats?.drivers || 0, icon: "local_shipping", color: "bg-green-50 text-green-600" },
+          { label: "الإيرادات LYD", value: (stats?.revenue || 0).toFixed(0), icon: "payments", color: "bg-purple-50 text-purple-600" },
+        ].map((s) => (
+          <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-5 flex items-center gap-4 shadow-sm">
+            <div className={`${s.color} p-3 rounded-xl`}>
+              <span className="material-symbols-outlined text-2xl">{s.icon}</span>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">{s.label}</p>
+              <p className="text-2xl font-bold text-[#091426]">{s.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Registration Requests */}
       <section>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-[#091426]">طلبات التسجيل الجديدة</h2>
           {pendingRegistrations.length > 0 && (
-            <span className="text-xs text-[#E05A2B] bg-orange-50 px-2 py-1 rounded-full font-bold">{pendingRegistrations.length} طلبات</span>
+            <span className="text-xs text-[#E05A2B] bg-orange-50 px-3 py-1 rounded-full font-bold">{pendingRegistrations.length} جديد</span>
           )}
         </div>
-        <div className="space-y-3">
-          {pendingRegistrations.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">لا توجد طلبات تسجيل جديدة</div>
-          ) : (
-            pendingRegistrations.map((user) => (
-              <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-                <div className="flex items-center gap-3 mb-3">
+
+        {pendingRegistrations.length === 0 ? (
+          <div className="bg-white border border-gray-200 rounded-xl p-12 text-center text-gray-400">لا توجد طلبات تسجيل جديدة</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {pendingRegistrations.map((user) => (
+              <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-gray-500">{user.role === "driver" ? "local_shipping" : "person"}</span>
+                    <span className="material-symbols-outlined text-gray-500 text-2xl">
+                      {user.role === "driver" ? "local_shipping" : "person"}
+                    </span>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-[#091426]">{user.name} ({user.role === "driver" ? "سائق" : "زبون"})</p>
-                    <p className="text-xs text-gray-500" dir="ltr">{user.phone}</p>
+                  <div>
+                    <p className="font-bold text-[#091426]">{user.name}</p>
+                    <p className="text-xs text-gray-500" dir="ltr">{user.phone} · {user.role === "driver" ? "سائق" : "زبون"}</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => approveUser(user.id)} className="flex-1 bg-[#E05A2B] text-white font-bold py-2.5 rounded-lg text-sm">موافقة</button>
-                  <button onClick={() => rejectUser(user.id)} className="flex-1 bg-gray-100 text-gray-600 font-bold py-2.5 rounded-lg text-sm">رفض</button>
+                <div className="flex gap-3">
+                  <button onClick={() => approveUser(user.id)} className="flex-1 bg-green-600 text-white font-bold py-2.5 rounded-lg text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-1">
+                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                    قبول
+                  </button>
+                  <button onClick={() => rejectUser(user.id)} className="flex-1 border-2 border-red-300 text-red-600 font-bold py-2.5 rounded-lg text-sm hover:bg-red-50 transition-colors flex items-center justify-center gap-1">
+                    <span className="material-symbols-outlined text-sm">cancel</span>
+                    رفض
+                  </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold text-[#091426]">تفعيل الاشتراكات</h2>
-        </div>
-        <div className="space-y-3">
-          {driversWithPendingSub.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-sm">لا توجد اشتراكات معلقة</div>
-          ) : (
-            driversWithPendingSub.map((user) => (
-              <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm border-r-4 border-r-[#E05A2B] relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#E05A2B] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">مدفوع</div>
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex gap-3">
-                    <div className="w-12 h-12 rounded-full border-2 border-[#E05A2B] p-0.5">
-                      <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-gray-600">person</span>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="font-bold text-[#091426]">{user.name}</p>
-                      <p className="text-xs text-gray-500" dir="ltr">{user.phone}</p>
-                    </div>
+      {/* Subscription Activation */}
+      {driversWithPendingSub.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-[#091426] mb-4">تفعيل الاشتراكات</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {driversWithPendingSub.map((user) => (
+              <div key={user.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm border-r-4 border-r-[#E05A2B]">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="font-bold text-[#091426]">{user.name}</p>
+                    <p className="text-xs text-gray-500" dir="ltr">{user.phone}</p>
                   </div>
                   <div className="text-left">
-                    <p className="text-xs text-gray-500">قيمة الاشتراك</p>
-                    <p className="font-bold text-[#E05A2B]">150.00 LYD</p>
+                    <p className="text-xs text-gray-500">الاشتراك</p>
+                    <p className="font-bold text-[#E05A2B]">150 LYD</p>
                   </div>
                 </div>
-                <button onClick={() => activateSubscription(user.driver?.id || "", user.id)} className="w-full bg-[#091426] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined">verified_user</span>
+                <button onClick={() => activateSubscription(user.driver?.id || "", user.id)} className="w-full bg-[#091426] text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 text-sm">
+                  <span className="material-symbols-outlined text-sm">verified_user</span>
                   تفعيل الحساب
                 </button>
               </div>
-            ))
-          )}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
