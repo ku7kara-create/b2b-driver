@@ -40,8 +40,18 @@ export async function GET() {
         name: u.name,
         phone: u.phone || "",
         role: u.role,
+        isApproved: u.isApproved,
         createdAt: u.createdAt.toISOString(),
-        subscriptionStatus: u.driver?.subscriptionStatus || null,
+        driver: u.driver ? {
+          id: u.driver.id,
+          subscriptionStatus: u.driver.subscriptionStatus,
+          subscriptionExpiry: u.driver.subscriptionExpiry?.toISOString() || null,
+          isAvailable: u.driver.isAvailable,
+          rating: u.driver.rating,
+          totalTrips: u.driver.totalTrips,
+          idNumber: u.driver.idNumber,
+          licenseType: u.driver.licenseType,
+        } : null,
       })),
     });
   } catch (error) {

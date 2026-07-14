@@ -28,6 +28,24 @@ export const authOptions: NextAuthOptions = {
           throw new Error("حسابك قيد المراجعة حالياً من قبل الإدارة");
         }
 
+        if (user.role === "driver") {
+          const driver = await prisma.driver.findUnique({ where: { userId: user.id } });
+          if (driver) {
+            if (driver.subscriptionStatus === "inactive" || driver.subscriptionStatus === "expired") {
+              throw new Error("انتهت صلاحية اشتراكك الشهري. يرجى زيارة المكتب لتجديد الاشتراك وتفعيل الحساب.");
+            }
+            if (driver.subscriptionStatus === "active" && driver.subscriptionExpiry) {
+              if (new Date() > driver.subscriptionExpiry) {
+                await prisma.driver.update({
+                  where: { id: driver.id },
+                  data: { subscriptionStatus: "expired", isAvailable: false },
+                });
+                throw new Error("انتهت صلاحية اشتراكك الشهري. يرجى زيارة المكتب لتجديد الاشتراك وتفعيل الحساب.");
+              }
+            }
+          }
+        }
+
         const isValid = await bcrypt.compare(
           credentials.password,
           user.passwordHash,
