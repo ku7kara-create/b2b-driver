@@ -46,12 +46,8 @@ export default function LoginPage() {
       <div className="w-full max-w-[420px] flex flex-col">
 
         <div className="flex justify-center mb-8">
-          <div className="w-24 h-24 bg-white rounded-xl shadow-sm flex items-center justify-center p-4 border border-gray-200">
-            <img
-              src="https://lh3.googleusercontent.com/aida/AP1WRLtYZ5jwWQMUVAxkDRRChuMLOCDeF-xwRUFTgHgyUYObUK4PgIL4_6QXO5Msj_jG18X26Mh_VaXtmRmQsRfttJBd9MfBjyLH51tp11939CH2u9ekTG3yJvvcOstol1OREqMvUHj_DMVubJj6J-pQ2BFe007NItoZOeh8oH5nA-FBT0NDGXFQpCxXe5jVLvT6RBpjLpd932S3HoWVqlNpB8Ae2hi1dYXxSdc73xi58PSIc2LHOQfRMfBz4_hL"
-              alt="B2B Driver Logo"
-              className="w-full h-full object-contain"
-            />
+          <div className="w-24 h-24 bg-[#1e293b] rounded-xl shadow-sm flex items-center justify-center">
+            <span className="text-3xl text-[#E05A2B] font-extrabold">B2B</span>
           </div>
         </div>
 

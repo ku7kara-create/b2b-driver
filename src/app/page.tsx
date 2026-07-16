@@ -9,11 +9,9 @@ export default function AccountSelectionPage() {
 
       <main className="flex-grow flex flex-col items-center justify-center px-4 py-8">
         <div className="mb-8 text-center">
-          <img
-            src="https://lh3.googleusercontent.com/aida/AP1WRLtYZ5jwWQMUVAxkDRRChuMLOCDeF-xwRUFTgHgyUYObUK4PgIL4_6QXO5Msj_jG18X26Mh_VaXtmRmQsRfttJBd9MfBjyLH51tp11939CH2u9ekTG3yJvvcOstol1OREqMvUHj_DMVubJj6J-pQ2BFe007NItoZOeh8oH5nA-FBT0NDGXFQpCxXe5jVLvT6RBpjLpd932S3HoWVqlNpB8Ae2hi1dYXxSdc73xi58PSIc2LHOQfRMfBz4_hL"
-            alt="B2B Driver"
-            className="w-24 h-24 mx-auto mb-4 rounded-xl object-contain bg-white p-2 border border-gray-200 shadow-sm"
-          />
+          <div className="w-24 h-24 mx-auto mb-4 rounded-xl bg-[#1e293b] flex items-center justify-center shadow-sm">
+            <span className="text-4xl text-[#E05A2B] font-extrabold">B2B</span>
+          </div>
           <h1 className="text-2xl font-bold text-[#091426] mb-2">أهلاً بك في B2B Driver</h1>
           <p className="text-base text-gray-500">اختر نوع الحساب للمتابعة في رحلتك اللوجستية</p>
         </div>
