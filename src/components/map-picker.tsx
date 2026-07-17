@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -11,6 +11,12 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
+
+function SizeInvalidator() {
+  const map = useMap();
+  useEffect(() => { setTimeout(() => map.invalidateSize(), 100); }, [map]);
+  return null;
+}
 
 function LocationPicker({ onSelect, onClose }: { onSelect: (lat: number, lng: number) => void; onClose: () => void }) {
   const [position, setPosition] = useState<[number, number]>([32.8872, 13.1913]); // Tripoli, Libya
@@ -31,11 +37,12 @@ function LocationPicker({ onSelect, onClose }: { onSelect: (lat: number, lng: nu
           <span style={{ fontWeight: "bold", fontSize: "16px" }}>اختر الموقع على الخريطة</span>
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "20px", cursor: "pointer", color: "#6b7280" }}>✕</button>
         </div>
-        <div style={{ flex: 1, minHeight: "400px" }}>
+        <div style={{ height: "450px", width: "100%", position: "relative" }}>
           <MapContainer center={position} zoom={13} style={{ height: "100%", width: "100%" }}>
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <Marker position={position} draggable={true} eventHandlers={{ dragend: (e) => { const m = e.target; const p = m.getLatLng(); setPosition([p.lat, p.lng]); } }} />
             <MapClickHandler />
+            <SizeInvalidator />
           </MapContainer>
         </div>
         <div style={{ padding: "12px 16px", borderTop: "1px solid #e5e7eb", display: "flex", gap: "8px" }}>
