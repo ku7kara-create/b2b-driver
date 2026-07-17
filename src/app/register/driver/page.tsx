@@ -23,6 +23,7 @@ export default function DriverRegisterPage() {
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
+    city: "بني وليد",
     idNumber: "",
     licenseType: "",
     vehicleType: "",
@@ -76,6 +77,7 @@ export default function DriverRegisterPage() {
           idNumber: form.idNumber,
           licenseType: form.licenseType,
           vehicleType: form.vehicleType,
+          city: form.city,
         }),
       });
 
@@ -177,6 +179,18 @@ export default function DriverRegisterPage() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-on-surface-variant px-1">المدينة</label>
+              <select
+                className="w-full py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base focus:outline-none focus:border-secondary-container transition-all"
+                value={form.city}
+                onChange={(e) => updateField("city", e.target.value)}
+              >
+                <option value="بني وليد">بني وليد</option>
+                <option value="بنغازي">بنغازي</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

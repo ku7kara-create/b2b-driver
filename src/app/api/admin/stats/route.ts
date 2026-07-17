@@ -16,14 +16,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const showAll = searchParams.get("all") === "true";
 
-    const where: any = { role: { not: "admin" } };
+    const adminUser = await prisma.user.findUnique({ where: { id: (session.user as any).id } });
+    const adminCity = adminUser?.assignedCity || "بني وليد";
+
+    const where: any = { role: { not: "admin" }, city: adminCity };
     if (!showAll) {
       where.isApproved = false;
     }
 
     const [usersCount, driversCount, tripsCount, completedTrips, revenue, pendingUsers] = await Promise.all([
-      prisma.user.count(),
-      prisma.driver.count(),
+      prisma.user.count({ where: { city: adminCity, role: { not: "admin" } } }),
+      prisma.driver.count({ where: { user: { city: adminCity } } }),
       prisma.trip.count(),
       prisma.trip.count({ where: { status: "completed" } }),
       prisma.trip.aggregate({ where: { status: "completed" }, _sum: { agreedPrice: true } }),

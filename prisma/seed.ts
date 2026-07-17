@@ -21,11 +21,26 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      name: "Admin",
+      name: "Admin بني وليد",
       email: "admin@b2b-driver.com",
       phone: "+218000000000",
       passwordHash,
       role: "admin",
+      city: "بني وليد",
+      assignedCity: "بني وليد",
+      isApproved: true,
+    },
+  });
+
+  const adminBenghazi = await prisma.user.create({
+    data: {
+      name: "Admin بنغازي",
+      email: "admin-beng@b2b-driver.com",
+      phone: "+218000000003",
+      passwordHash,
+      role: "admin",
+      city: "بنغازي",
+      assignedCity: "بنغازي",
       isApproved: true,
     },
   });
@@ -37,6 +52,7 @@ async function main() {
       phone: "+218000000001",
       passwordHash,
       role: "customer",
+      city: "بني وليد",
       isApproved: true,
     },
   });
@@ -48,6 +64,7 @@ async function main() {
       phone: "+218912345678",
       passwordHash,
       role: "driver",
+      city: "بني وليد",
       isApproved: true,
     },
   });

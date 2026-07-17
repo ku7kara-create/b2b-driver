@@ -9,6 +9,7 @@ export default function CustomerRegisterPage() {
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
+    city: "بني وليد",
     password: "",
     confirmPassword: "",
   });
@@ -45,6 +46,7 @@ export default function CustomerRegisterPage() {
           phone: `+218${form.phone}`,
           password: form.password,
           role: "customer",
+          city: form.city,
         }),
       });
 
@@ -148,6 +150,18 @@ export default function CustomerRegisterPage() {
                   required
                 />
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-on-surface-variant px-1">المدينة</label>
+              <select
+                className="w-full px-3 h-12 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:border-secondary-container text-base"
+                value={form.city}
+                onChange={(e) => updateField("city", e.target.value)}
+              >
+                <option value="بني وليد">بني وليد</option>
+                <option value="بنغازي">بنغازي</option>
+              </select>
             </div>
 
             <div className="space-y-1">

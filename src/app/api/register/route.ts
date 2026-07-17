@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
       phone,
       password,
       role,
+      city,
       idNumber,
       licenseType,
       vehicleType,
@@ -55,6 +56,7 @@ export async function POST(request: NextRequest) {
         phone,
         passwordHash,
         role,
+        city: city || "بني وليد",
       },
     });
 
