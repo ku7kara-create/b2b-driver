@@ -310,6 +310,7 @@ export default function CustomerRequestPage() {
 
       {mapTarget && (
         <MapPickerModal
+          target={mapTarget}
           onSelect={(lat, lng) => {
             if (mapTarget === "pickup") {
               updateField("pickupLat", String(lat));
