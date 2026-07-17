@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import dynamic from "next/dynamic";
+
+const MapPickerModal = dynamic(() => import("@/components/map-picker"), { ssr: false });
 
 const SERVICES: Record<string, { label: string; icon: string }> = {
   car: { label: "سيارة خاصة", icon: "directions_car" },
@@ -33,6 +36,7 @@ export default function CustomerRequestPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [mapTarget, setMapTarget] = useState<"pickup" | "dropoff" | null>(null);
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -215,6 +219,10 @@ export default function CustomerRequestPage() {
                 required
               />
             </div>
+            <button type="button" onClick={() => setMapTarget("pickup")} className="w-full text-[#E05A2B] text-xs font-medium flex items-center gap-1 mt-1">
+              <span className="material-symbols-outlined text-sm">map</span>
+              تحديد الموقع على الخريطة
+            </button>
           </div>
 
           <div className="space-y-2">
@@ -230,6 +238,10 @@ export default function CustomerRequestPage() {
                 required
               />
             </div>
+            <button type="button" onClick={() => setMapTarget("dropoff")} className="w-full text-[#E05A2B] text-xs font-medium flex items-center gap-1 mt-1">
+              <span className="material-symbols-outlined text-sm">map</span>
+              تحديد الموقع على الخريطة
+            </button>
           </div>
 
           {serviceType === "porter" && (
@@ -295,6 +307,23 @@ export default function CustomerRequestPage() {
           </button>
         </form>
       </main>
+
+      {mapTarget && (
+        <MapPickerModal
+          onSelect={(lat, lng) => {
+            if (mapTarget === "pickup") {
+              updateField("pickupLat", String(lat));
+              updateField("pickupLng", String(lng));
+              updateField("pickupAddress", `${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+            } else {
+              updateField("dropoffLat", String(lat));
+              updateField("dropoffLng", String(lng));
+              updateField("dropoffAddress", `${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+            }
+          }}
+          onClose={() => setMapTarget(null)}
+        />
+      )}
     </div>
   );
 }
