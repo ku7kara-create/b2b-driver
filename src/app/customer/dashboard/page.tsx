@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 interface Trip {
   id: string;
@@ -13,14 +14,23 @@ interface Trip {
   createdAt: string;
 }
 
+interface Bid {
+  id: string; driverId: string; price: number; status: string;
+  driver?: { user?: { name: string }; rating: number; totalTrips: number } | null;
+}
+
 const SERVICE_LABELS: Record<string, string> = {
   car: "سيارة خاصة", porter: "بورتر", tow_truck: "ساحبة",
 };
 
 export default function CustomerDashboardPage() {
+  const router = useRouter();
   const [activeTrip, setActiveTrip] = useState<Trip | null>(null);
   const [recentTrips, setRecentTrips] = useState<Trip[]>([]);
+  const [bids, setBids] = useState<Bid[]>([]);
   const [loading, setLoading] = useState(true);
+  const [acceptingId, setAcceptingId] = useState<string | null>(null);
+  const [bidPolling, setBidPolling] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
@@ -42,6 +52,45 @@ export default function CustomerDashboardPage() {
   useEffect(() => {
     fetchData().finally(() => setLoading(false));
   }, [fetchData]);
+
+  useEffect(() => {
+    if (!activeTrip || activeTrip.status !== "pending" || !bidPolling) return;
+    const fetchBids = async () => {
+      try {
+        const r = await fetch(`/api/trips/${activeTrip.id}/bids`);
+        if (r.ok) {
+          const d = await r.json();
+          setBids(d.bids || []);
+        }
+      } catch {}
+    };
+    fetchBids();
+    const iv = setInterval(fetchBids, 8000);
+    return () => clearInterval(iv);
+  }, [activeTrip?.id, activeTrip?.status, bidPolling]);
+
+  async function handleAccept(bidId: string) {
+    if (!activeTrip) return;
+    setAcceptingId(bidId);
+    try {
+      const res = await fetch(`/api/trips/${activeTrip.id}/accept`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bidId }),
+      });
+      if (res.ok) {
+        setBidPolling(false);
+        router.push(`/customer/trip/${activeTrip.id}`);
+      }
+    } catch {}
+    setAcceptingId(null);
+  }
+
+  async function handleReject(bidId: string) {
+    try {
+      await fetch(`/api/bids/${bidId}/reject`, { method: "POST" });
+      setBids((prev) => prev.filter((b) => b.id !== bidId));
+    } catch {}
+  }
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] pb-20">
@@ -77,16 +126,38 @@ export default function CustomerDashboardPage() {
                         {activeTrip.status === "accepted" ? "نشط" : "معلق"}
                       </span>
                     </div>
-                    <div className="mt-3 space-y-1 text-sm">
-                      <div className="flex items-center gap-2"><span className="material-symbols-outlined text-lg">local_shipping</span>{SERVICE_LABELS[activeTrip.serviceType]}</div>
+                    <div className="mt-2 text-sm text-gray-300">
+                      {activeTrip.pickupAddress} → {activeTrip.dropoffAddress}
                     </div>
-                    <Link
-                      href={activeTrip.status === "completed" ? `/customer/trip/${activeTrip.id}` : activeTrip.status === "accepted" ? `/customer/trip/${activeTrip.id}` : `/customer/bids/${activeTrip.id}`}
-                      className="block w-full bg-[#E05A2B] text-white text-center font-bold py-2 rounded-lg mt-4"
-                    >
-                      {activeTrip.status === "accepted" ? "تتبع" : "عرض العروض"}
-                    </Link>
                   </div>
+                  {activeTrip.status === "pending" && (
+                    <div className="p-4">
+                      <h3 className="font-bold text-[#091426] mb-3">العروض المقدمة ({bids.length})</h3>
+                      {bids.length === 0 ? (
+                        <p className="text-center text-gray-400 text-sm py-4">بانتظار عروض السائقين...</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {bids.sort((a, b) => a.price - b.price).map((bid) => (
+                            <div key={bid.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div>
+                                <p className="font-bold text-sm text-[#091426]">{bid.driver?.user?.name || "سائق"}</p>
+                                <p className="text-xs text-gray-500">⭐ {(bid.driver?.rating || 0).toFixed(1)} · {bid.driver?.totalTrips || 0} رحلة</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-[#E05A2B]">{bid.price.toFixed(2)} LYD</span>
+                                <button onClick={() => handleAccept(bid.id)} disabled={acceptingId === bid.id}
+                                  className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold disabled:opacity-50"
+                                >{acceptingId === bid.id ? "..." : "قبول"}</button>
+                                <button onClick={() => handleReject(bid.id)}
+                                  className="text-red-500 text-xs font-bold px-2 py-1.5"
+                                >رفض</button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </section>
             )}
