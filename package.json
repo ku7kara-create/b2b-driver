@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css && copy public\\tailwind.css src\\app\\globals.css /Y >nul && tsx server.mjs",
+    "dev": "npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css && copy public\\tailwind.css src\\app\\globals.css /Y >nul && nodemon --exec tsx server.mjs --ext ts,tsx,js,mjs",
     "build": "npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css && next build",
     "start": "tsx server.mjs",
     "css": "npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css --watch",
@@ -57,6 +57,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "nodemon": "^3.1.14",
     "tsx": "^4.19.0",
     "typescript": "7.0.2"
   }
