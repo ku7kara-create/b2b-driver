@@ -12,6 +12,7 @@ export async function GET() {
 
     const driver = await prisma.driver.findUnique({
       where: { userId: (session.user as any).id },
+      include: { user: true },
     });
 
     if (!driver) {
@@ -22,8 +23,14 @@ export async function GET() {
       return NextResponse.json({ error: "الاشتراك غير مفعل" }, { status: 403 });
     }
 
+    const driverCity = driver.user.city || "بني وليد";
+
     const trips = await prisma.trip.findMany({
-      where: { status: "pending", driverId: null },
+      where: {
+        status: "pending",
+        driverId: null,
+        customer: { city: driverCity },
+      },
       orderBy: { createdAt: "desc" },
       take: 20,
     });
