@@ -121,7 +121,7 @@ export default function DriverBidPage() {
           {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center">{error}</div>}
           {success && <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm text-center">تم تقديم العرض بنجاح!</div>}
           <div className="relative" dir="ltr">
-            <input type="number" className="w-full h-14 px-3 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right" placeholder="أدخل قيمة العرض" value={price} onChange={(e) => setPrice(e.target.value)} required />
+            <input type="number" className="w-full h-14 px-3 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="أدخل قيمة العرض" value={price} onChange={(e) => setPrice(e.target.value)} required />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium pointer-events-none">LYD</span>
           </div>
           <button type="submit" disabled={submitting || success} className="w-full h-14 bg-[#E05A2B] text-white font-bold text-lg rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
