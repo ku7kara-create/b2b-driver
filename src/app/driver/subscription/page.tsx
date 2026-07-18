@@ -25,7 +25,7 @@ export default function DriverWalletPage() {
           <>
             <div className="bg-[#1e293b] text-white rounded-xl p-6 text-center">
               <p className="text-sm text-gray-400 mb-2">الرصيد الحالي</p>
-              <p className="text-4xl font-extrabold">{earnings.totalEarnings.toFixed(2)} <span className="text-xl text-gray-300">LYD</span></p>
+              <p style={{fontSize:"36px", fontWeight:"800", color:"#ffffff"}}>{earnings.totalEarnings.toFixed(2)} <span style={{fontSize:"20px", fontWeight:"700", color:"#ffffff"}}>LYD</span></p>
               <p className="text-xs text-gray-400 mt-1">إجمالي الأرباح</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
