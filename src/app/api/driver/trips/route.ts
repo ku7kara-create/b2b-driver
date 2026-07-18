@@ -25,11 +25,20 @@ export async function GET() {
 
     const driverCity = driver.user.city || "بني وليد";
 
+    const driverVehicle = await prisma.vehicle.findFirst({ where: { driverId: driver.id } });
+    const vehicleType = driverVehicle?.type || "private_car";
+
+    let serviceTypes: string[] = [vehicleType];
+    if (vehicleType === "porter_canter") {
+      serviceTypes = ["porter", "porter_canter"];
+    }
+
     const trips = await prisma.trip.findMany({
       where: {
         status: "pending",
         driverId: null,
         customer: { city: driverCity },
+        serviceType: { in: serviceTypes },
       },
       orderBy: { createdAt: "desc" },
       take: 20,

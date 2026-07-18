@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "جميع الحقول المطلوبة غير مكتملة" }, { status: 400 });
     }
 
-    const validTypes = ["car", "porter", "tow_truck"];
+    const validTypes = ["private_car", "car", "porter", "porter_canter", "tow_truck"];
     if (!validTypes.includes(serviceType)) {
       return NextResponse.json({ error: "نوع الخدمة غير صالح" }, { status: 400 });
     }

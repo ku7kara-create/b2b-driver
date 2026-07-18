@@ -20,7 +20,7 @@ interface Bid {
 }
 
 const SERVICE_LABELS: Record<string, string> = {
-  car: "سيارة خاصة", porter: "بورتر", tow_truck: "ساحبة",
+  private_car: "سيارة خاصة", car: "سيارة خاصة", porter: "بورتر", porter_canter: "بورتر", tow_truck: "ساحبة",
 };
 
 export default function CustomerDashboardPage() {
@@ -166,7 +166,7 @@ export default function CustomerDashboardPage() {
               <h2 className="text-lg font-semibold text-[#091426] mb-3">طلب خدمة جديدة</h2>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { type: "car", label: "سيارة خاصة", icon: "directions_car" },
+                  { type: "private_car", label: "سيارة خاصة", icon: "directions_car" },
                   { type: "porter", label: "بورتر", icon: "local_shipping" },
                   { type: "tow_truck", label: "ساحبة", icon: "precision_manufacturing" },
                 ].map((svc) => (

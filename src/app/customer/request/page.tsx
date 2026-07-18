@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 const MapPickerModal = dynamic(() => import("@/components/map-picker"), { ssr: false });
 
 const SERVICES: Record<string, { label: string; icon: string }> = {
-  car: { label: "سيارة خاصة", icon: "directions_car" },
+  private_car: { label: "سيارة خاصة", icon: "directions_car" },
   porter: { label: "بورتر", icon: "local_shipping" },
   tow_truck: { label: "ساحبة", icon: "precision_manufacturing" },
 };
@@ -121,7 +121,7 @@ export default function CustomerRequestPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                type: "car",
+                type: "private_car",
                 title: "سيارة خاصة",
                 desc: "خدمة التوصيل السريع للمهام والمستندات الهامة داخل المدينة بكفاءة عالية.",
                 img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBunljD517EzvEnJCvYLI-DFh6zPCspkSIGyb7PRld15TYvEoVZJ0CdyiHD21uyMo2pJInWsNstT9SG_Du5JB_1rhdecVWbd8VAn2nRDhBrveCdE5B2BbAyvkKaHkFzfXzZEARtjQmYeEwwZ5HuET03AcJcSEmWUCaJtGC9ZdKC7cJCYLXAzaxa5npSRfDLZROlzzTkZyqRHY9DTne7OVKVu55gVC601JRW44jT8lVkttBb_Dnx-ZKcEVxVfX230BaGi1tMlVMI4QyH",
