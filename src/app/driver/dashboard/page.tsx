@@ -64,8 +64,8 @@ export default function DriverDashboardPage() {
         )}
 
         <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <div><span className="text-sm text-gray-500">حالة الاتصال</span><div className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span><span className="text-lg font-bold text-[#E05A2B]">متصل</span></div></div>
-          <div className="bg-gray-100 px-3 py-1 rounded-full"><span className="text-xs text-gray-500">النظام نشط</span></div>
+          <div><span className="text-sm text-gray-500">الحالة</span><div className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span><span className="text-lg font-bold text-green-600">مستعد لاستلام الطلبات</span></div></div>
+          <div className="bg-green-50 px-3 py-1 rounded-full"><span className="text-xs text-green-600">جاهز للطلبات</span></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
