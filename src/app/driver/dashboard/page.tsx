@@ -109,7 +109,7 @@ export default function DriverDashboardPage() {
           { href: "/driver/dashboard", icon: "dashboard", label: "الرئيسية", active: true },
           { href: "/driver/bid", icon: "local_shipping", label: "العروض" },
           { href: "/driver/subscription", icon: "credit_card", label: "المحفظة" },
-          { href: "/login", icon: "person", label: "الحساب" },
+          { href: "/driver/profile", icon: "person", label: "الحساب" },
         ].map((it) => (
           <Link key={it.href} href={it.href} className={`flex flex-col items-center px-3 py-1 rounded-xl ${it.active ? "bg-[#E05A2B] text-white" : "text-gray-400 hover:text-[#E05A2B]"}`}>
             <span className="material-symbols-outlined">{it.icon}</span>
