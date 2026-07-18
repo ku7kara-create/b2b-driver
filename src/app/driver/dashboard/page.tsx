@@ -37,7 +37,7 @@ export default function DriverDashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] pb-20">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse justify-between items-center px-4 py-2">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-bold text-[#091426]">سائق لوجستي</h1>
@@ -93,20 +93,6 @@ export default function DriverDashboardPage() {
            ))}
          </div>}
       </main>
-
-      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 flex flex-row-reverse justify-around items-center py-2 shadow-sm z-50">
-        {[
-          { href: "/driver/dashboard", icon: "dashboard", label: "الرئيسية", active: true },
-          { href: "/driver/bid", icon: "local_shipping", label: "العروض" },
-          { href: "/driver/subscription", icon: "credit_card", label: "المحفظة" },
-          { href: "/driver/profile", icon: "person", label: "الحساب" },
-        ].map((it) => (
-          <Link key={it.href} href={it.href} className={`flex flex-col items-center px-3 py-1 rounded-xl ${it.active ? "bg-[#E05A2B] text-white" : "text-gray-400 hover:text-[#E05A2B]"}`}>
-            <span className="material-symbols-outlined">{it.icon}</span>
-            <span className="text-xs mt-1">{it.label}</span>
-          </Link>
-        ))}
-      </nav>
     </div>
   );
 }

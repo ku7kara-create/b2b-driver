@@ -15,7 +15,7 @@ export default function DriverWalletPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] pb-24">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse items-center px-4 h-16">
         <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
         <h1 className="text-lg font-bold text-[#091426] mr-4">المحفظة</h1>
