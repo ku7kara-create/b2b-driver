@@ -11,7 +11,7 @@ interface Bid {
 
 export default function CustomerBidsPage() {
   const params = useParams(); const router = useRouter();
-  const tripId = params?.id as string;
+  const tripId = (params as any)?.id as string;
   const [bids, setBids] = useState<Bid[]>([]);
   const [loading, setLoading] = useState(true);
   const [acceptingId, setAcceptingId] = useState<string | null>(null);
