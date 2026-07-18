@@ -3,113 +3,45 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-export default function DriverSubscriptionPage() {
-  const [status, setStatus] = useState<{
-    subscriptionStatus: string;
-    subscriptionExpiry: string | null;
-  } | null>(null);
+export default function DriverWalletPage() {
+  const [earnings, setEarnings] = useState({ today: 0, trips: 0, total: 0 });
   const [loading, setLoading] = useState(true);
-  const [requesting, setRequesting] = useState(false);
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("/api/driver/subscription");
-        if (res.ok) {
-          const data = await res.json();
-          setStatus(data);
-        }
-      } catch {}
+    (async () => {
+      try { const r = await fetch("/api/driver/earnings"); if (r.ok) setEarnings(await r.json()); } catch {}
       setLoading(false);
-    }
-    load();
+    })();
   }, []);
 
-  async function handleRequestSubscription() {
-    setRequesting(true);
-    setMessage("");
-    try {
-      const res = await fetch("/api/driver/subscription", { method: "POST" });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage("تم تقديم طلب الاشتراك. سيتم مراجعة الدفع وتفعيل حسابك.");
-        setStatus({
-          subscriptionStatus: "pending",
-          subscriptionExpiry: null,
-        });
-      } else {
-        setMessage(data.error || "فشل الطلب");
-      }
-    } catch {
-      setMessage("تعذر الاتصال بالخادم");
-    }
-    setRequesting(false);
-  }
-
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-        <Link href="/driver/dashboard" className="p-2 hover:bg-surface-container-low rounded-full">
-          <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-        </Link>
-        <h1 className="text-xl font-semibold text-on-surface mr-4">الاشتراك</h1>
+    <div className="min-h-screen bg-[#F9F9F9] pb-24">
+      <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse items-center px-4 h-16">
+        <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
+        <h1 className="text-lg font-bold text-[#091426] mr-4">المحفظة</h1>
       </header>
-
-      <main className="flex-grow flex items-center justify-center py-8 px-4">
-        <div className="w-full max-w-md">
-          {loading ? (
-            <div className="text-center text-on-surface-variant">جاري التحميل...</div>
-          ) : (
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 shadow-sm">
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 rounded-full bg-secondary-fixed flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-outlined text-4xl text-secondary">credit_card</span>
-                </div>
-                <h2 className="text-2xl font-bold text-primary mb-2">
-                  {status?.subscriptionStatus === "active"
-                    ? "الاشتراك نشط"
-                    : status?.subscriptionStatus === "pending"
-                      ? "الاشتراك قيد المراجعة"
-                      : "الاشتراك غير مفعل"}
-                </h2>
-                <p className="text-on-surface-variant">
-                  {status?.subscriptionStatus === "active"
-                    ? `ينتهي الاشتراك في: ${status.subscriptionExpiry ? new Date(status.subscriptionExpiry).toLocaleDateString("ar") : "—"}`
-                    : status?.subscriptionStatus === "pending"
-                      ? "جارٍ مراجعة طلبك من قبل الإدارة"
-                      : "الاشتراك الشهري 150 LYD"}
-                </p>
-              </div>
-
-              {message && (
-                <div className="bg-green-100 text-green-800 p-3 rounded-lg text-sm text-center mb-4">
-                  {message}
-                </div>
-              )}
-
-              {status?.subscriptionStatus === "inactive" && (
-                <button
-                  onClick={handleRequestSubscription}
-                  disabled={requesting}
-                  className="w-full h-14 bg-secondary-container text-white font-bold text-lg rounded-lg shadow-md hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                >
-                  {requesting ? (
-                    <>
-                      <span className="material-symbols-outlined animate-spin">sync</span>
-                      جاري الطلب...
-                    </>
-                  ) : (
-                    <>
-                      <span>تقديم طلب اشتراك (150 LYD)</span>
-                      <span className="material-symbols-outlined">send</span>
-                    </>
-                  )}
-                </button>
-              )}
+      <main className="max-w-lg mx-auto px-4 py-8 space-y-4">
+        {loading ? <div className="text-center py-12 text-gray-400">جاري التحميل...</div> : (
+          <>
+            <div className="bg-[#1e293b] text-white rounded-xl p-6 text-center">
+              <p className="text-sm text-gray-400 mb-2">الرصيد الحالي</p>
+              <p className="text-4xl font-bold">{earnings.today.toFixed(2)} <span className="text-lg text-gray-400">LYD</span></p>
+              <p className="text-xs text-gray-400 mt-1">أرباح اليوم</p>
             </div>
-          )}
-        </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-center">
+                <span className="material-symbols-outlined text-[#E05A2B] text-2xl">local_shipping</span>
+                <p className="text-xs text-gray-500 mt-2">عدد الرحلات</p>
+                <p className="text-2xl font-bold text-[#091426]">{earnings.trips}</p>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-center">
+                <span className="material-symbols-outlined text-[#E05A2B] text-2xl">history</span>
+                <p className="text-xs text-gray-500 mt-2">إجمالي الرحلات</p>
+                <p className="text-2xl font-bold text-[#091426]">{earnings.total}</p>
+              </div>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
