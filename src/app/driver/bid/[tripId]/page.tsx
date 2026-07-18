@@ -57,6 +57,7 @@ export default function DriverBidPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
+      <style>{`.clear-bid-input::-webkit-outer-spin-button,.clear-bid-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.clear-bid-input{-moz-appearance:textfield}`}</style>
       <header className="bg-white border-b border-gray-200 flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
         <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
         <h1 className="text-lg font-bold text-[#091426] mr-4">تفاصيل الطلب</h1>
@@ -121,8 +122,7 @@ export default function DriverBidPage() {
           {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center">{error}</div>}
           {success && <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm text-center">تم تقديم العرض بنجاح!</div>}
           <div className="relative" dir="ltr">
-            <input type="number" className="w-full h-14 px-3 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="أدخل قيمة العرض" value={price} onChange={(e) => setPrice(e.target.value)} required />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium pointer-events-none">LYD</span>
+            <input type="number" className="clear-bid-input w-full h-14 px-3 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right" placeholder="أدخل قيمة العرض" value={price} onChange={(e) => setPrice(e.target.value)} required />
           </div>
           <button type="submit" disabled={submitting || success} className="w-full h-14 bg-[#E05A2B] text-white font-bold text-lg rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
             {submitting ? "جاري التقديم..." : success ? "✓ تم" : "تقديم عرض"}
