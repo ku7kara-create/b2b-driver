@@ -56,7 +56,7 @@ export default function DriverBidPage() {
   if (!trip || error) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center"><div className="text-center"><span className="material-symbols-outlined text-6xl text-gray-300">error</span><p className="mt-4 text-gray-500">{error || "غير موجود"}</p><Link href="/driver/dashboard" className="text-[#E05A2B] font-bold mt-2 block">العودة</Link></div></div>;
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col pb-24">
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
       <style>{`.clear-bid-input::-webkit-outer-spin-button,.clear-bid-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.clear-bid-input{-moz-appearance:textfield}`}</style>
       <header className="bg-white border-b border-gray-200 flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
         <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
