@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+const TripMap = dynamic(() => import("@/components/trip-map"), { ssr: false });
 
 interface TripDetails {
   id: string; serviceType: string;
@@ -61,13 +64,12 @@ export default function DriverBidPage() {
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-          <div className="h-48 bg-gray-100 flex items-center justify-center relative">
-            <span className="material-symbols-outlined text-6xl text-gray-300">map</span>
-            <div className="absolute bottom-3 right-3 bg-white px-3 py-1 rounded-lg shadow text-xs text-gray-600">
-              {trip.pickupLat?.toFixed(4)}, {trip.pickupLng?.toFixed(4)}
-            </div>
-          </div>
-          <div className="p-4 border-b border-gray-200 flex items-center gap-2">
+          {trip.pickupLat && trip.dropoffLat ? (
+            <TripMap pickup={[trip.pickupLat, trip.pickupLng]} dropoff={[trip.dropoffLat, trip.dropoffLng]} />
+          ) : (
+            <div className="h-48 bg-gray-100 flex items-center justify-center"><span className="text-gray-400">الخريطة غير متوفرة</span></div>
+          )}
+          <div className="p-3 border-b border-gray-200 flex items-center gap-2">
             <span className="px-2 py-1 rounded-full text-xs font-bold bg-orange-50 text-[#E05A2B]">{SERVICE_LABELS[trip.serviceType]}</span>
             <span className="text-xs text-gray-400">طلب #{trip.id.slice(-8)}</span>
           </div>
@@ -77,12 +79,18 @@ export default function DriverBidPage() {
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <span className="material-symbols-outlined text-green-500 mt-0.5">trip_origin</span>
-              <div><p className="text-xs text-gray-400">موقع الانطلاق</p><p className="text-sm font-medium text-[#091426]">{trip.pickupAddress}</p></div>
+              <div className="flex-1"><p className="text-xs text-gray-400">موقع الانطلاق</p><p className="text-sm font-medium text-[#091426]">{trip.pickupAddress}</p></div>
+              <a href={`https://www.google.com/maps/dir/?api=1&destination=${trip.pickupLat},${trip.pickupLng}&travelmode=driving`} target="_blank" rel="noreferrer"
+                className="bg-green-600 text-white px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0"
+              ><span className="material-symbols-outlined text-sm">navigation</span>توجيه</a>
             </div>
             <div className="border-r-2 border-dashed border-gray-200 mr-[11px] h-6"></div>
             <div className="flex items-start gap-3">
               <span className="material-symbols-outlined text-red-500 mt-0.5">location_on</span>
-              <div><p className="text-xs text-gray-400">موقع الوصول</p><p className="text-sm font-medium text-[#091426]">{trip.dropoffAddress}</p></div>
+              <div className="flex-1"><p className="text-xs text-gray-400">موقع الوصول</p><p className="text-sm font-medium text-[#091426]">{trip.dropoffAddress}</p></div>
+              <a href={`https://www.google.com/maps/dir/?api=1&destination=${trip.dropoffLat},${trip.dropoffLng}&travelmode=driving`} target="_blank" rel="noreferrer"
+                className="bg-red-600 text-white px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0"
+              ><span className="material-symbols-outlined text-sm">navigation</span>توجيه</a>
             </div>
           </div>
         </div>
