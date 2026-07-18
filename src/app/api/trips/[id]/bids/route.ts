@@ -18,12 +18,27 @@ export async function GET(
       where: { id: paramId },
     });
 
-    if (!trip || trip.customerId !== (session.user as any).id) {
-      return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
+    const userId = (session.user as any).id;
+    const role = (session.user as any).role;
+
+    if (role !== "customer" && role !== "driver") {
+      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+    }
+
+    if (role === "customer" && trip.customerId !== userId) {
+      return NextResponse.json({ error: "غير مصرح" }, { status: 404 });
+    }
+
+    let where: any = { tripId: paramId };
+    if (role === "driver") {
+      const driver = await prisma.driver.findUnique({ where: { userId } });
+      where.driverId = driver?.id || "";
+    } else {
+      where.status = "pending";
     }
 
     const bids = await prisma.bid.findMany({
-      where: { tripId: paramId, status: "pending" },
+      where,
       include: {
         driver: {
           include: { user: { select: { name: true, phone: true } } },

@@ -32,9 +32,20 @@ export default function DriverBidPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`/api/driver/trips/${tripId}`);
-        if (res.ok) setTrip((await res.json()).trip);
-        else setError("الرحلة غير موجودة");
+        const [tripRes, bidsRes] = await Promise.all([
+          fetch(`/api/driver/trips/${tripId}`),
+          fetch(`/api/trips/${tripId}/bids`),
+        ]);
+        if (tripRes.ok) setTrip((await tripRes.json()).trip);
+        else { setError("الرحلة غير موجودة"); setLoading(false); return; }
+        if (bidsRes.ok) {
+          const bidsData = await bidsRes.json();
+          const myPendingBid = (bidsData.bids || []).find((b: any) => b.status === "pending");
+          if (myPendingBid) {
+            setBidStatus("pending");
+            setStatusMessage("تم تقديم عرضك - في انتظار موافقة الزبون");
+          }
+        }
       } catch { setError("تعذر التحميل"); }
       setLoading(false);
     })();
