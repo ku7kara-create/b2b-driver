@@ -81,17 +81,17 @@ export default function DriverDashboardPage() {
 
         {loading ? <div className="text-center py-12 text-gray-400">جاري التحميل...</div> :
          requests.length === 0 ? <div className="bg-white border border-gray-200 rounded-xl p-12 text-center text-gray-400">لا توجد طلبات قريبة</div> :
-         <div className="space-y-3">
-           {requests.map((t) => (
-             <div key={t.id} className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm">
-               <div className="flex items-center gap-3">
-                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center"><span className="material-symbols-outlined text-[#E05A2B]">{t.serviceType === "car" ? "directions_car" : "local_shipping"}</span></div>
-                 <div><span className="font-bold text-sm">{SERVICE_LABELS[t.serviceType]}</span><p className="text-xs text-gray-500 truncate max-w-[150px]">{t.pickupAddress} → {t.dropoffAddress}</p></div>
-               </div>
-               <button onClick={() => router.push(`/driver/bid/${t.id}`)} className="bg-[#E05A2B] text-white px-5 py-2 rounded-lg font-bold text-sm">عرض</button>
-             </div>
-           ))}
-         </div>}
+          <div className="space-y-3">
+            {requests.map((t) => (
+              <div key={t.id} onClick={() => router.push(`/driver/bid/${t.id}`)} className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm cursor-pointer hover:border-[#E05A2B] transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center"><span className="material-symbols-outlined text-[#E05A2B]">{t.serviceType === "car" ? "directions_car" : "local_shipping"}</span></div>
+                  <div><span className="font-bold text-sm">{SERVICE_LABELS[t.serviceType]}</span><p className="text-xs text-gray-500 truncate max-w-[150px]">{t.pickupAddress} → {t.dropoffAddress}</p></div>
+                </div>
+                <span className="material-symbols-outlined text-gray-300">chevron_left</span>
+              </div>
+            ))}
+          </div>}
       </main>
     </div>
   );
