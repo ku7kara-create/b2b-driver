@@ -28,7 +28,6 @@ export default function DriverDashboardPage() {
   }, []);
 
   useEffect(() => { fetchRequests().finally(() => setLoading(false)); }, [fetchRequests]);
-  useEffect(() => { (async () => { try { const r = await fetch("/api/driver/earnings"); if (r.ok) setEarnings(await r.json()); } catch {} })(); }, []);
 
   if (!session) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center"><Link href="/login" className="text-[#E05A2B] font-bold">تسجيل الدخول</Link></div>;
   if (!subscriptionActive) return (
@@ -77,7 +76,6 @@ export default function DriverDashboardPage() {
               <span className="text-xs text-gray-700">المحفظة</span>
             </Link>
           </div>
-        </div>
 
         <div className="flex items-center justify-between"><h2 className="text-lg font-bold text-[#091426]">طلبات قريبة</h2><button onClick={() => { setLoading(true); fetchRequests().finally(() => setLoading(false)); }} className="text-[#E05A2B] text-sm">تحديث</button></div>
 
