@@ -124,7 +124,8 @@ export default function DriverBidPage() {
           <div className="relative" dir="ltr">
             <input type="number" className="clear-bid-input w-full h-14 px-3 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right" placeholder="أدخل قيمة العرض" value={price} onChange={(e) => setPrice(e.target.value)} required />
           </div>
-          <button type="submit" disabled={submitting || success} className="w-full h-14 bg-[#E05A2B] text-white font-bold text-lg rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          <button type="submit" disabled={submitting || success}
+            style={{width:"100%",height:"56px",backgroundColor: submitting||success ? "#9ca3af" : "#E05A2B",color:"white",fontWeight:"bold",fontSize:"18px",borderRadius:"8px",border:"none",cursor: submitting||success ? "not-allowed" : "pointer"}}>
             {submitting ? "جاري التقديم..." : success ? "✓ تم" : "تقديم عرض"}
           </button>
         </form>
