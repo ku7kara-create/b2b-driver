@@ -76,21 +76,18 @@ httpServer.listen(port, () => {
   console.log("═══════════════════════════════════════");
 });
 
-process.on("SIGTERM", () => {
-  console.log("\n[SIGTERM] Shutting down gracefully...");
+function shutdown() {
+  console.log("\n[Shutdown] Closing server...");
+  if (io) { io.close(); }
   httpServer.close(() => {
-    console.log("[Server] Closed");
+    console.log("[Shutdown] Server closed, port released");
     process.exit(0);
   });
-});
+  setTimeout(() => { console.log("[Shutdown] Force exit"); process.exit(0); }, 3000);
+}
 
-process.on("SIGINT", () => {
-  console.log("\n[SIGINT] Shutting down...");
-  httpServer.close(() => {
-    console.log("[Server] Closed");
-    process.exit(0);
-  });
-});
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
 
 process.on("uncaughtException", (err) => {
   console.error("[Fatal] Uncaught exception:", err);
