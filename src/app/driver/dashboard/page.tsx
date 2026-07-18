@@ -17,7 +17,6 @@ export default function DriverDashboardPage() {
   const { data: session } = useSession();
   const [requests, setRequests] = useState<TripRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [earnings, setEarnings] = useState({ today: 0, trips: 0, total: 0 });
   const [subscriptionActive, setSubscriptionActive] = useState(true);
 
   const fetchRequests = useCallback(async () => {
@@ -68,14 +67,7 @@ export default function DriverDashboardPage() {
           <div className="bg-green-50 px-3 py-1 rounded-full"><span className="text-xs text-green-600">جاهز للطلبات</span></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div className="md:col-span-8 bg-[#1e293b] text-white rounded-xl p-5 relative overflow-hidden min-h-[160px]">
-            <span className="text-xs text-gray-400 uppercase block mb-1">أرباح اليوم</span>
-            <div className="flex items-baseline gap-1"><span className="text-4xl font-bold">{earnings.today.toFixed(2)}</span><span className="text-sm text-gray-400">LYD</span></div>
-            <div className="flex items-center gap-4 mt-3"><span className="text-xs text-gray-400">الرحلات: <strong className="text-white">{earnings.trips}</strong></span><span className="text-xs text-gray-400">الإجمالي: <strong className="text-white">{earnings.total}</strong></span></div>
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#E05A2B] opacity-20 rounded-full blur-3xl"></div>
-          </div>
-          <div className="md:col-span-4 grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
             <Link href="/driver/trips" className="bg-white border border-gray-200 rounded-xl p-3 flex flex-col items-center justify-center gap-1 hover:bg-gray-50">
               <span className="material-symbols-outlined text-[#E05A2B] text-xl">history</span>
               <span className="text-xs text-gray-700">سجل الرحلات</span>
