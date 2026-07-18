@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function DriverWalletPage() {
-  const [earnings, setEarnings] = useState({ today: 0, trips: 0, total: 0 });
+  const [earnings, setEarnings] = useState({ today: 0, trips: 0, total: 0, totalEarnings: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,8 +25,8 @@ export default function DriverWalletPage() {
           <>
             <div className="bg-[#1e293b] text-white rounded-xl p-6 text-center">
               <p className="text-sm text-gray-400 mb-2">الرصيد الحالي</p>
-              <p className="text-4xl font-bold">{earnings.today.toFixed(2)} <span className="text-lg text-gray-400">LYD</span></p>
-              <p className="text-xs text-gray-400 mt-1">أرباح اليوم</p>
+              <p className="text-4xl font-extrabold">{earnings.totalEarnings.toFixed(2)} <span className="text-xl text-gray-300">LYD</span></p>
+              <p className="text-xs text-gray-400 mt-1">إجمالي الأرباح</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-center">
@@ -35,9 +35,9 @@ export default function DriverWalletPage() {
                 <p className="text-2xl font-bold text-[#091426]">{earnings.trips}</p>
               </div>
               <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm text-center">
-                <span className="material-symbols-outlined text-[#E05A2B] text-2xl">history</span>
-                <p className="text-xs text-gray-500 mt-2">إجمالي الرحلات</p>
-                <p className="text-2xl font-bold text-[#091426]">{earnings.total}</p>
+                <span className="material-symbols-outlined text-[#E05A2B] text-2xl">account_balance_wallet</span>
+                <p className="text-xs text-gray-500 mt-2">أرباح الرحلات</p>
+                <p className="text-2xl font-bold text-[#091426]">{earnings.today.toFixed(2)} <span className="text-sm text-gray-400">LYD</span></p>
               </div>
             </div>
           </>

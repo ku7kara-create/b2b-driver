@@ -30,15 +30,17 @@ export async function GET() {
     });
 
     const todayEarnings = todayTrips.reduce((sum, t) => sum + (t.agreedPrice || 0), 0);
-    const allTrips = await prisma.trip.count({
+    const allTrips = await prisma.trip.findMany({
       where: { driverId: driver.id, status: "completed" },
     });
+
+    const totalEarnings = allTrips.reduce((sum, t) => sum + (t.agreedPrice || 0), 0);
 
     return NextResponse.json({
       today: todayEarnings,
       trips: todayTrips.length,
-      hours: todayTrips.length > 0 ? Math.round((todayTrips.length * 0.7) * 10) / 10 : 0,
-      total: allTrips,
+      total: allTrips.length,
+      totalEarnings,
     });
   } catch (error) {
     console.error("[Driver Earnings] Error:", error);
