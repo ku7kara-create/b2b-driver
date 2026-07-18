@@ -26,6 +26,8 @@ export default function DriverBidPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [bidStatus, setBidStatus] = useState<"pending" | "accepted" | "rejected" | "expired" | null>(null);
+  const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -46,11 +48,45 @@ export default function DriverBidPage() {
     try {
       const res = await fetch("/api/bids", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId, price: amount }) });
       const data = await res.json();
-      if (res.ok) { setSuccess(true); setTimeout(() => router.push("/driver/dashboard"), 1200); }
+      if (res.ok) { setSuccess(true); setBidStatus("pending"); setStatusMessage("تم تقديم عرضك - في انتظار موافقة الزبون"); }
       else setError(data.error || "فشل التقديم");
     } catch { setError("تعذر الاتصال"); }
     setSubmitting(false);
   }
+
+  useEffect(() => {
+    if (bidStatus !== "pending") return;
+    const iv = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/trips/${tripId}`);
+        if (r.ok) {
+          const d = await r.json();
+          const t = d.trip;
+          if (t.status === "accepted" && t.acceptedBidId) {
+            const bidRes = await fetch(`/api/trips/${tripId}/bids`);
+            if (bidRes.ok) {
+              const bd = await bidRes.json();
+              const myBid = (bd.bids || []).find((b: any) => b.status === "accepted");
+              if (myBid) {
+                setBidStatus("accepted");
+                setStatusMessage("تم قبول عرضك! جاري التحويل...");
+                setTimeout(() => router.push(`/driver/trip/${tripId}`), 1500);
+              } else {
+                setBidStatus("rejected");
+                setStatusMessage("تم قبول سائق آخر");
+              }
+              clearInterval(iv);
+            }
+          } else if (t.status !== "pending") {
+            setBidStatus("expired");
+            setStatusMessage("الرحلة لم تعد متاحة");
+            clearInterval(iv);
+          }
+        }
+      } catch {}
+    }, 5000);
+    return () => clearInterval(iv);
+  }, [bidStatus, tripId]);
 
   if (loading) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center text-gray-400">جاري التحميل...</div>;
   if (!trip || error) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center"><div className="text-center"><span className="material-symbols-outlined text-6xl text-gray-300">error</span><p className="mt-4 text-gray-500">{error || "غير موجود"}</p><Link href="/driver/dashboard" className="text-[#E05A2B] font-bold mt-2 block">العودة</Link></div></div>;
@@ -117,6 +153,15 @@ export default function DriverBidPage() {
           </div>
         )}
 
+        {bidStatus ? (
+          <div className={`p-4 rounded-xl text-center font-bold ${
+            bidStatus === "pending" ? "bg-yellow-50 text-yellow-700" :
+            bidStatus === "accepted" ? "bg-green-50 text-green-700" :
+            "bg-red-50 text-red-700"
+          }`}>
+            <p className="text-lg">{statusMessage}</p>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-4">
           <h3 className="font-bold text-[#091426]">تقديم عرض سعر</h3>
           {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center">{error}</div>}
@@ -129,6 +174,7 @@ export default function DriverBidPage() {
             {submitting ? "جاري التقديم..." : success ? "✓ تم" : "تقديم عرض"}
           </button>
         </form>
+        )}
       </main>
     </div>
   );
