@@ -14,7 +14,7 @@ export default function DriverLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] pb-16">
+    <div className="min-h-screen bg-[#F9F9F9] pb-20">
       {children}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex flex-row-reverse justify-around items-center py-2 shadow-sm z-50">
         {NAV.map((it) => {
