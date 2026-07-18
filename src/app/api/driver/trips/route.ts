@@ -26,11 +26,17 @@ export async function GET() {
     const driverCity = driver.user.city || "بني وليد";
 
     const driverVehicle = await prisma.vehicle.findFirst({ where: { driverId: driver.id } });
-    const vehicleType = driverVehicle?.type || "private_car";
+    const rawType = driverVehicle?.type || "private_car";
 
-    let serviceTypes: string[] = [vehicleType];
-    if (vehicleType === "porter_canter") {
-      serviceTypes = ["porter", "porter_canter"];
+    let serviceTypes: string[] = [rawType];
+    if (rawType === "porter_canter" || rawType === "truck") {
+      serviceTypes = ["porter", "porter_canter", "truck"];
+    }
+    if (rawType === "private_car" || rawType === "car") {
+      serviceTypes = ["private_car", "car"];
+    }
+    if (rawType === "tow_truck") {
+      serviceTypes = ["tow_truck"];
     }
 
     const trips = await prisma.trip.findMany({

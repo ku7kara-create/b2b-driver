@@ -5,10 +5,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const VEHICLE_TYPES = [
-  { value: "truck", label: "شاحنة (بورتر)", icon: "local_shipping" },
-  { value: "car", label: "سيارة", icon: "directions_car" },
+  { value: "porter_canter", label: "بورتر وكنتر", icon: "local_shipping" },
+  { value: "private_car", label: "سيارة خاصة", icon: "directions_car" },
   { value: "tow_truck", label: "ساحبة", icon: "precision_manufacturing" },
-  { value: "bike", label: "دراجة", icon: "motorcycle" },
 ];
 
 const LICENSE_TYPES = [
