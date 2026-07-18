@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx kill-port 5002 && rmdir /s /q .next 2>nul & npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css && copy public\\tailwind.css src\\app\\globals.css /Y >nul && tsx watch server.mjs",
+    "dev": "npx kill-port 5002 && if exist .next rmdir /s /q .next && npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css && copy public\\tailwind.css src\\app\\globals.css /Y >nul && tsx watch server.mjs",
     "build": "npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css && next build",
     "start": "tsx server.mjs",
     "css": "npx tailwindcss -i ./src/app/globals.css -o ./public/tailwind.css --watch",
