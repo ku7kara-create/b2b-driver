@@ -25,6 +25,10 @@ export async function GET(
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
+    if (!trip) {
+      return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
+    }
+
     if (role === "customer" && trip.customerId !== userId) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 404 });
     }
