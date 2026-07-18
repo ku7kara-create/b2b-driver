@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -22,7 +22,7 @@ function FitBounds({ pickup, dropoff }: { pickup: [number, number]; dropoff: [nu
 }
 
 export default function TripMap({ pickup, dropoff }: { pickup: [number, number]; dropoff: [number, number] }) {
-  const [mounted, setMounted] = require("react").useState(false);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return <div className="h-64 bg-gray-100 flex items-center justify-center"><span className="text-gray-400">جاري تحميل الخريطة...</span></div>;
 

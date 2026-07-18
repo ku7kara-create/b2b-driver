@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
-const TripMap = dynamic(() => import("@/components/trip-map"), { ssr: false });
+const TripMap = dynamic(() => import("@/components/trip-map").catch(() => ({ default: () => <div className="h-64 bg-gray-100 flex items-center justify-center"><span className="text-gray-400">الخريطة غير متوفرة</span></div> })), { ssr: false });
 
 interface TripDetails {
   id: string; serviceType: string;
