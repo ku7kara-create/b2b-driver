@@ -6,9 +6,10 @@ import { useState, useEffect } from "react";
 
 interface TripDetails {
   id: string; serviceType: string;
-  pickupAddress: string; dropoffAddress: string;
-  cargoDetails: string | null; vehicleMakeModel: string | null;
-  status: string;
+  pickupAddress: string; pickupLat: number; pickupLng: number;
+  dropoffAddress: string; dropoffLat: number; dropoffLng: number;
+  cargoDetails: string | null; cargoPhotos: string | null;
+  vehicleMakeModel: string | null; status: string;
 }
 
 const SERVICE_LABELS: Record<string, string> = { car: "سيارة خاصة", porter: "بورتر", tow_truck: "ساحبة" };
@@ -55,32 +56,70 @@ export default function DriverBidPage() {
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
       <header className="bg-white border-b border-gray-200 flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
         <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-        <h1 className="text-lg font-bold text-[#091426] mr-4">{SERVICE_LABELS[trip.serviceType]}</h1>
+        <h1 className="text-lg font-bold text-[#091426] mr-4">تفاصيل الطلب</h1>
       </header>
-      <main className="flex-grow flex items-center justify-center p-4">
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="space-y-3 mb-6">
-            <div className="flex items-start gap-2"><span className="material-symbols-outlined text-green-500 mt-0.5">trip_origin</span><div><p className="text-xs text-gray-400">الانطلاق</p><p className="text-sm font-medium text-[#091426]">{trip.pickupAddress}</p></div></div>
-            <div className="flex items-start gap-2"><span className="material-symbols-outlined text-red-500 mt-0.5">location_on</span><div><p className="text-xs text-gray-400">الوصول</p><p className="text-sm font-medium text-[#091426]">{trip.dropoffAddress}</p></div></div>
-            {trip.cargoDetails && <div className="bg-gray-50 p-3 rounded-lg text-sm text-gray-600">{trip.cargoDetails}</div>}
-            {trip.vehicleMakeModel && <div className="bg-gray-50 p-3 rounded-lg text-sm font-bold text-[#091426]">🚗 {trip.vehicleMakeModel}</div>}
-          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center">{error}</div>}
-            {success && <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm text-center">تم تقديم العرض بنجاح!</div>}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">السعر (LYD)</label>
-              <div className="relative" dir="ltr">
-                <input type="number" className="w-full h-14 px-3 pr-12 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} required />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">LYD</span>
-              </div>
+      <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="h-48 bg-gray-100 flex items-center justify-center relative">
+            <span className="material-symbols-outlined text-6xl text-gray-300">map</span>
+            <div className="absolute bottom-3 right-3 bg-white px-3 py-1 rounded-lg shadow text-xs text-gray-600">
+              {trip.pickupLat?.toFixed(4)}, {trip.pickupLng?.toFixed(4)}
             </div>
-            <button type="submit" disabled={submitting || success} className="w-full h-14 bg-[#E05A2B] text-white font-bold text-lg rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-              {submitting ? <><span className="animate-spin">⏳</span> جاري التقديم...</> : success ? "✓ تم" : "تقديم العرض"}
-            </button>
-          </form>
+          </div>
+          <div className="p-4 border-b border-gray-200 flex items-center gap-2">
+            <span className="px-2 py-1 rounded-full text-xs font-bold bg-orange-50 text-[#E05A2B]">{SERVICE_LABELS[trip.serviceType]}</span>
+            <span className="text-xs text-gray-400">طلب #{trip.id.slice(-8)}</span>
+          </div>
         </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-green-500 mt-0.5">trip_origin</span>
+              <div><p className="text-xs text-gray-400">موقع الانطلاق</p><p className="text-sm font-medium text-[#091426]">{trip.pickupAddress}</p></div>
+            </div>
+            <div className="border-r-2 border-dashed border-gray-200 mr-[11px] h-6"></div>
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-red-500 mt-0.5">location_on</span>
+              <div><p className="text-xs text-gray-400">موقع الوصول</p><p className="text-sm font-medium text-[#091426]">{trip.dropoffAddress}</p></div>
+            </div>
+          </div>
+        </div>
+
+        {trip.cargoDetails && (
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <h3 className="font-bold text-[#091426] mb-2">تفاصيل البضائع</h3>
+            <p className="text-sm text-gray-600">{trip.cargoDetails}</p>
+            {trip.cargoPhotos && (
+              <div className="flex gap-2 mt-3 flex-wrap">
+                {trip.cargoPhotos.split(",").map((img, i) => (
+                  <div key={i} className="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-400">📷 صورة {i+1}</div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {trip.vehicleMakeModel && (
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <h3 className="font-bold text-[#091426] mb-2">نوع المركبة</h3>
+            <p className="text-sm font-bold text-[#E05A2B]">{trip.vehicleMakeModel}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-4">
+          <h3 className="font-bold text-[#091426]">تقديم عرض سعر</h3>
+          {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center">{error}</div>}
+          {success && <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm text-center">تم تقديم العرض بنجاح!</div>}
+          <div className="relative" dir="ltr">
+            <input type="number" className="w-full h-14 px-3 pr-12 border border-gray-300 rounded-lg focus:border-[#E05A2B] focus:ring-1 focus:ring-[#E05A2B] text-lg font-bold text-right" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} required />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">LYD</span>
+          </div>
+          <button type="submit" disabled={submitting || success} className="w-full h-14 bg-[#E05A2B] text-white font-bold text-lg rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+            {submitting ? "جاري التقديم..." : success ? "✓ تم" : "تقديم عرض"}
+          </button>
+        </form>
       </main>
     </div>
   );
