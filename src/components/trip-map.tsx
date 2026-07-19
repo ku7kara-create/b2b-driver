@@ -28,7 +28,7 @@ export default function TripMap({ pickup, dropoff }: { pickup: [number, number];
 
   return (
     <div style={{ height: "256px", width: "100%", overflow: "hidden", position: "relative", borderRadius: "12px" }}>
-      <style>{`.leaflet-container{overflow:hidden!important;border-radius:12px!important}.leaflet-tile-pane{overflow:hidden!important}`}</style>
+      <style>{`.leaflet-container{overflow:hidden!important;border-radius:12px!important}.leaflet-tile-pane{overflow:hidden!important}.leaflet-control-zoom{display:none!important}.leaflet-control-attribution{display:none!important}`}</style>
       <MapContainer center={pickup} zoom={11} style={{ height: "100%", width: "100%", borderRadius: "12px" }}>
         <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Marker position={pickup} />
