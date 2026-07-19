@@ -149,12 +149,24 @@ export default function DriverBidPage() {
             <p className="text-sm text-gray-600">{trip.cargoDetails}</p>
             {trip.cargoPhotos && trip.cargoPhotos.length > 0 && (
               <div className="flex gap-2 mt-3 flex-wrap">
-                {trip.cargoPhotos.split(",").filter(Boolean).map((img, i) => (
-                  <div key={i} className="px-3 py-2 bg-gray-100 rounded-lg text-xs text-gray-600 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">image</span>
-                    {img.trim()}
-                  </div>
-                ))}
+                {trip.cargoPhotos.split(",").filter(Boolean).map((img, i) => {
+                  const src = img.startsWith("http") ? img.trim() : `/uploads/${img.trim()}`;
+                  return (
+                    <div key={i} className="w-24 h-24 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 relative group">
+                      <img src={src} alt={`صورة ${i+1}`} className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const el = e.target as HTMLImageElement;
+                          el.style.display = "none";
+                          const parent = el.parentElement;
+                          if (parent) {
+                            parent.classList.add("flex", "items-center", "justify-center");
+                            parent.innerHTML = `<span class="text-xs text-gray-400 px-2 text-center">${img.trim()}</span>`;
+                          }
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
