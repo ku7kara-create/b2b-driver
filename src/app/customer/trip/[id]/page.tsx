@@ -106,12 +106,21 @@ export default function CustomerTripPage() {
         </div>
 
         {trip.driver && (
-          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-white"><span className="material-symbols-outlined">person</span></div>
-              <div><h3 className="font-bold">{trip.driver.user.name}</h3><p className="text-xs text-gray-500">⭐ {trip.driver.rating?.toFixed(1)}</p></div>
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-white"><span className="material-symbols-outlined">person</span></div>
+                <div><h3 className="font-bold">{trip.driver.user.name}</h3><p className="text-xs text-gray-500">⭐ {trip.driver.rating?.toFixed(1)}</p></div>
+              </div>
             </div>
-            <a href={`tel:${trip.driver.user.phone}`} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold">اتصال</a>
+            <div className="flex gap-2">
+              <a href={`tel:${trip.driver.user.phone}`} className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined text-lg">call</span> اتصال
+              </a>
+              <a href={`https://wa.me/${trip.driver.user.phone?.replace('+','')}`} target="_blank" rel="noreferrer" className="flex-1 bg-green-500 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined text-lg">chat</span> واتساب
+              </a>
+            </div>
           </div>
         )}
       </main>

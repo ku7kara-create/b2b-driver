@@ -100,12 +100,21 @@ export default function DriverTripPage() {
         </div>
 
         {trip.customer && (
-          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center"><span className="text-lg">👤</span></div>
-              <div><p className="font-bold text-sm">{trip.customer.name}</p><p className="text-xs text-gray-500">{trip.customer.phone}</p></div>
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center"><span className="text-lg">👤</span></div>
+                <div><p className="font-bold text-sm">{trip.customer.name}</p><p className="text-xs text-gray-500">{trip.customer.phone}</p></div>
+              </div>
             </div>
-            <a href={`tel:${trip.customer.phone}`} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold">اتصال</a>
+            <div className="flex gap-2">
+              <a href={`tel:${trip.customer.phone}`} className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined text-lg">call</span> اتصال
+              </a>
+              <a href={`https://wa.me/${trip.customer.phone?.replace('+','')}`} target="_blank" rel="noreferrer" className="flex-1 bg-green-500 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined text-lg">chat</span> واتساب
+              </a>
+            </div>
           </div>
         )}
 
