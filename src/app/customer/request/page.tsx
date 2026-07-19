@@ -71,7 +71,18 @@ export default function CustomerRequestPage() {
 
       if (serviceType === "porter") {
         body.cargoDetails = form.cargoDetails;
-        body.cargoPhotos = form.cargoPhotos.length > 0 ? form.cargoPhotos.map((f) => f.name).join(",") : null;
+        if (form.cargoPhotos.length > 0) {
+          const fd = new FormData();
+          form.cargoPhotos.forEach((f) => fd.append("files", f));
+          try {
+            const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+            if (upRes.ok) {
+              const upData = await upRes.json();
+              body.cargoPhotos = upData.files.join(",");
+            }
+          } catch {}
+        }
+      }
       }
       if (serviceType === "tow_truck") {
         body.vehicleMakeModel = form.vehicleMakeModel;
