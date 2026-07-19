@@ -83,7 +83,6 @@ export default function CustomerRequestPage() {
           } catch {}
         }
       }
-      }
       if (serviceType === "tow_truck") {
         body.vehicleMakeModel = form.vehicleMakeModel;
       }
