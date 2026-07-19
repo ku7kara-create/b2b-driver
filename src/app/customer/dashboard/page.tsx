@@ -137,7 +137,7 @@ export default function CustomerDashboardPage() {
                       {activeTrip.pickupAddress} → {activeTrip.dropoffAddress}
                     </div>
                     {activeTrip.status === "pending" && (
-                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { await fetch(`/api/trips/${activeTrip.id}/cancel`, { method: "POST" }); setActiveTrip(null); setBids([]); } }} style={{marginTop:"8px",fontSize:"12px",color:"#f87171",backgroundColor:"transparent",border:"1px solid #f87171",borderRadius:"4px",padding:"4px 8px",cursor:"pointer"}}>
+                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { await fetch("/api/cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId: activeTrip.id }) }); setActiveTrip(null); setBids([]); } }} style={{marginTop:"8px",fontSize:"12px",color:"#f87171",backgroundColor:"transparent",border:"1px solid #f87171",borderRadius:"4px",padding:"4px 8px",cursor:"pointer"}}>
                         إلغاء الطلب
                       </button>
                     )}
