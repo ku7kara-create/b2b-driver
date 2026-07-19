@@ -92,7 +92,9 @@ export default function CustomerTripPage() {
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         {trip.pickupLat && trip.dropoffLat ? (
-          <TripMap pickup={[trip.pickupLat, trip.pickupLng]} dropoff={[trip.dropoffLat, trip.dropoffLng]} />
+          <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+            <TripMap pickup={[trip.pickupLat, trip.pickupLng]} dropoff={[trip.dropoffLat, trip.dropoffLng]} />
+          </div>
         ) : (
           <div className="h-64 bg-gray-100 rounded-xl flex items-center justify-center"><span className="text-gray-400">الخريطة غير متوفرة</span></div>
         )}
