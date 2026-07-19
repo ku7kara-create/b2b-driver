@@ -94,8 +94,8 @@ export default function DriverTripPage() {
           </div>
           <div className="text-center py-4 bg-gray-50 rounded-lg mb-4">{trip.agreedPrice && <p className="text-3xl font-bold text-[#E05A2B]">{trip.agreedPrice.toFixed(2)} <span className="text-sm text-gray-400">LYD</span></p>}</div>
           <div className="space-y-3">
-            <div className="flex items-start gap-2"><span className="text-green-500 mt-0.5">📍</span><div><p className="text-xs text-gray-400">الانطلاق</p><p className="text-sm font-medium">{trip.pickupAddress}</p></div></div>
-            <div className="flex items-start gap-2"><span className="text-red-500 mt-0.5">📍</span><div><p className="text-xs text-gray-400">الوصول</p><p className="text-sm font-medium">{trip.dropoffAddress}</p></div></div>
+            <div className="flex items-start gap-2"><span className="text-green-500 mt-0.5">📍</span><div><p className="text-xs text-gray-400">موقع الزبون</p><p className="text-sm font-medium">{trip.pickupAddress || "موقع الانطلاق"}</p></div></div>
+            <div className="flex items-start gap-2"><span className="text-red-500 mt-0.5">📍</span><div><p className="text-xs text-gray-400">موقع التوصيل</p><p className="text-sm font-medium">{trip.dropoffAddress || "موقع الوصول"}</p></div></div>
           </div>
         </div>
 
@@ -122,11 +122,11 @@ export default function DriverTripPage() {
           {trip.status === "accepted" && (
             <>
               <button onClick={() => navigateTo(trip.pickupLat || 32.88, trip.pickupLng || 13.19)}
-                className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+                style={{width:"100%",padding:"12px",backgroundColor:"#1e40af",color:"white",fontWeight:"bold",borderRadius:"8px",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",fontSize:"14px"}}>
                 <span className="material-symbols-outlined">navigation</span> الانتقال إلى موقع الزبون (Google Maps)
               </button>
               <button onClick={() => updateStatus("started")} disabled={updating}
-                className="w-full bg-[#E05A2B] text-white font-bold py-3 rounded-lg">
+                style={{width:"100%",padding:"14px",backgroundColor:"#FF8C00",color:"white",fontWeight:"bold",borderRadius:"8px",border:"none",cursor:"pointer",fontSize:"16px"}}>
                 {updating ? "جاري..." : "تأكيد الوصول للزبون"}
               </button>
             </>
@@ -135,11 +135,11 @@ export default function DriverTripPage() {
           {trip.status === "started" && (
             <>
               <button onClick={() => navigateTo(trip.dropoffLat || 32.12, trip.dropoffLng || 20.07)}
-                className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+                style={{width:"100%",padding:"12px",backgroundColor:"#1e40af",color:"white",fontWeight:"bold",borderRadius:"8px",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",fontSize:"14px"}}>
                 <span className="material-symbols-outlined">navigation</span> الانتقال إلى وجهة التوصيل (Google Maps)
               </button>
               <button onClick={() => updateStatus("completed")} disabled={updating}
-                className="w-full bg-green-600 text-white font-bold py-3 rounded-lg">
+                style={{width:"100%",padding:"14px",backgroundColor:"#16a34a",color:"white",fontWeight:"bold",borderRadius:"8px",border:"none",cursor:"pointer",fontSize:"16px"}}>
                 {updating ? "جاري..." : "إنهاء الرحلة"}
               </button>
             </>
