@@ -108,12 +108,12 @@ export default function DriverTripPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <a href={`/driver/chat/${tripId}`} className="flex-1 bg-[#FF8C00] text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined">chat</span> رسالة
-              </a>
-              <a href={`tel:${trip.customer.phone}`} className="flex-1 bg-green-600 text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined">call</span> اتصال
-              </a>
+              <a href={`/driver/chat/${tripId}`}
+                style={{flex:"1", backgroundColor:"#FF8C00", color:"white", padding:"12px", borderRadius:"8px", fontWeight:"bold", display:"flex", alignItems:"center", justifyContent:"center", gap:"4px", textDecoration:"none"}}
+              ><span className="material-symbols-outlined">chat</span> رسالة</a>
+              <a href={`tel:${trip.customer.phone}`}
+                style={{flex:"1", backgroundColor:"#16a34a", color:"white", padding:"12px", borderRadius:"8px", fontWeight:"bold", display:"flex", alignItems:"center", justifyContent:"center", gap:"4px", textDecoration:"none"}}
+              ><span className="material-symbols-outlined">call</span> اتصال</a>
             </div>
           </div>
         )}
