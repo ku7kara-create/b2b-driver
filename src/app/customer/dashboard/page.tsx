@@ -129,6 +129,11 @@ export default function CustomerDashboardPage() {
                     <div className="mt-2 text-sm text-gray-300">
                       {activeTrip.pickupAddress} → {activeTrip.dropoffAddress}
                     </div>
+                    {activeTrip.status === "pending" && (
+                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { await fetch(`/api/trips/${activeTrip.id}/cancel`, { method: "POST" }); setActiveTrip(null); setBids([]); } }} className="mt-2 text-xs text-red-400 hover:text-red-300 border border-red-400 rounded px-2 py-1">
+                        إلغاء الطلب
+                      </button>
+                    )}
                   </div>
                   {activeTrip.status === "pending" && (
                     <div className="p-4">
