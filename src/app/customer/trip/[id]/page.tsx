@@ -24,6 +24,11 @@ export default function CustomerTripPage() {
   const [comment, setComment] = useState("");
   const [reviewed, setReviewed] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [copied, setCopied] = useState("");
+
+  function copyText(text: string, label: string) {
+    navigator.clipboard.writeText(text).then(() => { setCopied(label); setTimeout(() => setCopied(""), 1500); }).catch(() => {});
+  }
 
   useEffect(() => {
     (async () => {
@@ -83,6 +88,7 @@ export default function CustomerTripPage() {
         <Link href="/customer/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
         <h1 className="text-lg font-bold text-[#091426] mr-4">تتبع الرحلة</h1>
       </header>
+      {copied && <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-4 py-2 rounded-full text-sm">✓ تم نسخ {copied}</div>}
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         {trip.pickupLat && trip.dropoffLat ? (
@@ -100,8 +106,8 @@ export default function CustomerTripPage() {
           </div>
           {trip.agreedPrice && <p className="text-2xl font-bold text-[#E05A2B] text-center my-3">{trip.agreedPrice.toFixed(2)} LYD</p>}
           <div className="space-y-2 text-sm">
-            <div className="flex items-start gap-2"><span className="text-green-500 mt-0.5">📍</span><span>{trip.pickupAddress}</span></div>
-            <div className="flex items-start gap-2"><span className="text-red-500 mt-0.5">📍</span><span>{trip.dropoffAddress}</span></div>
+            <div className="flex items-start gap-2 cursor-pointer" onClick={() => copyText(trip.pickupAddress, "العنوان")}><span className="text-green-500 mt-0.5">📍</span><span className="flex-1">{trip.pickupAddress}</span><span className="material-symbols-outlined text-gray-300 text-sm">content_copy</span></div>
+            <div className="flex items-start gap-2 cursor-pointer" onClick={() => copyText(trip.dropoffAddress, "العنوان")}><span className="text-red-500 mt-0.5">📍</span><span className="flex-1">{trip.dropoffAddress}</span><span className="material-symbols-outlined text-gray-300 text-sm">content_copy</span></div>
           </div>
         </div>
 
@@ -110,7 +116,7 @@ export default function CustomerTripPage() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-white"><span className="material-symbols-outlined">person</span></div>
-                <div><h3 className="font-bold">{trip.driver.user.name}</h3><p className="text-xs text-gray-500">⭐ {trip.driver.rating?.toFixed(1)}</p></div>
+                <div><h3 className="font-bold">{trip.driver.user.name}</h3><p className="text-xs text-gray-500 cursor-pointer" onClick={() => copyText(trip.driver!.user.phone, "الهاتف")}>📋 {trip.driver.rating?.toFixed(1)}</p></div>
               </div>
             </div>
             <div className="flex gap-2">
