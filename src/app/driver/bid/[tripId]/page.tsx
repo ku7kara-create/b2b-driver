@@ -28,6 +28,7 @@ export default function DriverBidPage() {
   const [success, setSuccess] = useState(false);
   const [bidStatus, setBidStatus] = useState<"pending" | "accepted" | "rejected" | "expired" | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -145,7 +146,8 @@ export default function DriverBidPage() {
               <div className="flex gap-2 mt-3 flex-wrap">
                 {trip.cargoPhotos.split(",").filter(Boolean).map((img, i) => (
                   <img key={i} src={`/uploads/${img.trim()}`} alt={`صورة ${i+1}`}
-                    className="w-24 h-24 rounded-lg object-cover border border-gray-200 bg-gray-50"
+                    className="w-24 h-24 rounded-lg object-cover border border-gray-200 bg-gray-50 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setPreviewImage(`/uploads/${img.trim()}`)}
                   />
                 ))}
               </div>
@@ -183,6 +185,13 @@ export default function DriverBidPage() {
         </form>
         )}
       </main>
+
+      {previewImage && (
+        <div onClick={() => setPreviewImage(null)} style={{position:"fixed",inset:0,zIndex:9999,backgroundColor:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <button onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }} style={{position:"absolute",top:"16px",right:"16px",background:"white",border:"none",borderRadius:"50%",width:"40px",height:"40px",fontSize:"20px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}>✕</button>
+          <img src={previewImage} alt="معاينة" style={{maxWidth:"90%",maxHeight:"90%",objectFit:"contain",borderRadius:"8px"}} onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
     </div>
   );
 }
