@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || (session.user as any).role !== "driver") {
@@ -21,6 +21,17 @@ export async function GET() {
 
     if (driver.subscriptionStatus !== "active") {
       return NextResponse.json({ error: "الاشتراك غير مفعل" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
+
+    if (status === "active") {
+      const trip = await prisma.trip.findFirst({
+        where: { driverId: driver.id, status: { in: ["accepted", "started"] } },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json({ trip });
     }
 
     const driverCity = driver.user.city || "بني وليد";

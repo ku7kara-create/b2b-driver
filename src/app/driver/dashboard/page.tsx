@@ -16,14 +16,22 @@ export default function DriverDashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [requests, setRequests] = useState<TripRequest[]>([]);
+  const [activeTrip, setActiveTrip] = useState<TripRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [subscriptionActive, setSubscriptionActive] = useState(true);
 
   const fetchRequests = useCallback(async () => {
     try {
-      const res = await fetch("/api/driver/trips");
-      if (res.ok) { setRequests((await res.json()).trips || []); setSubscriptionActive(true); }
-      else if (res.status === 403) setSubscriptionActive(false);
+      const [pendingRes, activeRes] = await Promise.all([
+        fetch("/api/driver/trips"),
+        fetch("/api/driver/trips?status=active"),
+      ]);
+      if (pendingRes.ok) { setRequests((await pendingRes.json()).trips || []); setSubscriptionActive(true); }
+      else if (pendingRes.status === 403) setSubscriptionActive(false);
+      if (activeRes.ok) {
+        const d = await activeRes.json();
+        setActiveTrip(d.trip || null);
+      }
     } catch {}
   }, []);
 
@@ -58,6 +66,20 @@ export default function DriverDashboardPage() {
               <div><p className="font-bold">طلب جديد متوفر بالقرب منك!</p><p className="text-xs opacity-90">{requests.length} طلبات في مدينتك</p></div>
             </div>
             <button onClick={fetchRequests} className="bg-white text-[#E05A2B] px-4 py-1 rounded-lg font-bold text-sm">تحديث</button>
+          </div>
+        )}
+
+        {activeTrip && (
+          <div className="bg-green-50 border-2 border-green-500 rounded-xl p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-bold text-green-700 text-lg">🚀 رحلة نشطة</span>
+              <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">{activeTrip.status === "accepted" ? "في الطريق" : "جاري"}</span>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">{activeTrip.pickupAddress} → {activeTrip.dropoffAddress}</p>
+            <div className="flex gap-2">
+              <button onClick={() => router.push(`/driver/trip/${activeTrip.id}`)} className="flex-1 bg-[#E05A2B] text-white py-2 rounded-lg font-bold text-sm">📋 تفاصيل الرحلة</button>
+              <button onClick={() => router.push(`/driver/chat/${activeTrip.id}`)} className="flex-1 bg-[#FF8C00] text-white py-2 rounded-lg font-bold text-sm">💬 المحادثة</button>
+            </div>
           </div>
         )}
 
