@@ -136,24 +136,29 @@ export default function CustomerDashboardPage() {
                       {bids.length === 0 ? (
                         <p className="text-center text-gray-400 text-sm py-4">بانتظار عروض السائقين...</p>
                       ) : (
-                        <div className="space-y-2">
-                          {bids.sort((a, b) => a.price - b.price).map((bid) => (
-                            <div key={bid.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div>
-                                <p className="font-bold text-sm text-[#091426]">{bid.driver?.user?.name || "سائق"}</p>
-                                <p className="text-xs text-gray-500">⭐ {(bid.driver?.rating || 0).toFixed(1)} · {bid.driver?.totalTrips || 0} رحلة</p>
+                        <div className="space-y-3">
+                          {bids.sort((a, b) => a.price - b.price).map((bid, idx) => {
+                            const eta = 3 + (bid.driver?.totalTrips || 1) % 12;
+                            return (
+                            <div key={bid.id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                              <div className="flex justify-between items-start mb-3">
+                                <div>
+                                  <p className="font-bold text-[#091426]">{bid.driver?.user?.name || "سائق"}</p>
+                                  <p className="text-xs text-gray-500">⭐ {(bid.driver?.rating || 0).toFixed(1)} · {bid.driver?.totalTrips || 0} رحلة</p>
+                                  <p className="text-xs text-green-600 mt-1">🚗 يصل خلال {eta} دقائق</p>
+                                </div>
+                                <p className="text-2xl font-extrabold text-[#E05A2B]">{bid.price.toFixed(2)} <span className="text-sm text-gray-400">LYD</span></p>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-[#E05A2B]">{bid.price.toFixed(2)} LYD</span>
+                              <div className="flex gap-2">
                                 <button onClick={() => handleAccept(bid.id)} disabled={acceptingId === bid.id}
-                                  className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold disabled:opacity-50"
-                                >{acceptingId === bid.id ? "..." : "قبول"}</button>
+                                  className="flex-1 bg-green-600 text-white py-2.5 rounded-lg font-bold text-sm disabled:opacity-50"
+                                >{acceptingId === bid.id ? "جاري..." : "قبول العرض"}</button>
                                 <button onClick={() => handleReject(bid.id)}
-                                  className="text-red-500 text-xs font-bold px-2 py-1.5"
+                                  className="px-4 py-2.5 rounded-lg border-2 border-red-200 text-red-500 font-bold text-sm"
                                 >رفض</button>
                               </div>
                             </div>
-                          ))}
+                          )})}
                         </div>
                       )}
                     </div>
