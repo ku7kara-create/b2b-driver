@@ -70,15 +70,10 @@ export default function DriverDashboardPage() {
         )}
 
         {activeTrip && (
-          <div className="bg-green-50 border-2 border-green-500 rounded-xl p-4">
-            <div className="flex justify-between items-center mb-2">
+          <div onClick={() => router.push(`/driver/trip/${activeTrip.id}`)} className="bg-green-50 border-2 border-green-500 rounded-xl p-4 cursor-pointer hover:bg-green-100 transition-colors">
+            <div className="flex justify-between items-center">
               <span className="font-bold text-green-700 text-lg">🚀 رحلة نشطة</span>
               <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">{activeTrip.status === "accepted" ? "في الطريق" : "جاري"}</span>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">{activeTrip.pickupAddress} → {activeTrip.dropoffAddress}</p>
-            <div className="flex gap-2">
-              <button onClick={() => router.push(`/driver/trip/${activeTrip.id}`)} className="flex-1 bg-[#E05A2B] text-white py-2 rounded-lg font-bold text-sm">📋 تفاصيل الرحلة</button>
-              <button onClick={() => router.push(`/driver/chat/${activeTrip.id}`)} className="flex-1 bg-[#FF8C00] text-white py-2 rounded-lg font-bold text-sm">💬 المحادثة</button>
             </div>
           </div>
         )}
