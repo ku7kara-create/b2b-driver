@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const TripMap = dynamic(() => import("@/components/trip-map"), { ssr: false });
 
 interface Trip {
   id: string;
@@ -113,24 +116,28 @@ export default function CustomerDashboardPage() {
               <section>
                 <h2 className="text-lg font-semibold text-[#091426] mb-3">الطلب الحالي</h2>
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="h-40 bg-gray-100 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-6xl text-gray-300">map</span>
+                  <div style={{ height: "250px", width: "100%", overflow: "hidden", position: "relative", backgroundColor: "#e5e7eb" }} className="flex items-center justify-center">
+                    {activeTrip.pickupLat && activeTrip.dropoffLat ? (
+                      <TripMap pickup={[activeTrip.pickupLat, activeTrip.pickupLng]} dropoff={[activeTrip.dropoffLat, activeTrip.dropoffLng]} />
+                    ) : (
+                      <span className="material-symbols-outlined text-6xl text-gray-300">map</span>
+                    )}
                   </div>
-                  <div className="p-4 bg-[#1e293b] text-white">
+                  <div style={{ backgroundColor: "#1e293b", color: "white", padding: "16px" }}>
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-xs text-gray-400 mb-1">رقم الطلب</p>
-                        <p className="text-lg font-bold">#{activeTrip.id.slice(-8)}</p>
+                        <p style={{ color: "#9ca3af", fontSize: "12px", marginBottom: "4px" }}>رقم الطلب</p>
+                        <p style={{ fontSize: "18px", fontWeight: "bold" }}>#{activeTrip.id.slice(-8)}</p>
                       </div>
-                      <span className="bg-[#E05A2B] px-2 py-1 rounded-full text-xs font-bold">
+                      <span style={{ backgroundColor: "#FF8C00", color: "white", padding: "2px 8px", borderRadius: "9999px", fontSize: "12px", fontWeight: "bold" }}>
                         {activeTrip.status === "accepted" ? "نشط" : "معلق"}
                       </span>
                     </div>
-                    <div className="mt-2 text-sm text-gray-300">
+                    <div style={{ marginTop: "8px", fontSize: "14px", color: "#d1d5db" }}>
                       {activeTrip.pickupAddress} → {activeTrip.dropoffAddress}
                     </div>
                     {activeTrip.status === "pending" && (
-                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { await fetch(`/api/trips/${activeTrip.id}/cancel`, { method: "POST" }); setActiveTrip(null); setBids([]); } }} className="mt-2 text-xs text-red-400 hover:text-red-300 border border-red-400 rounded px-2 py-1">
+                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { await fetch(`/api/trips/${activeTrip.id}/cancel`, { method: "POST" }); setActiveTrip(null); setBids([]); } }} style={{marginTop:"8px",fontSize:"12px",color:"#f87171",backgroundColor:"transparent",border:"1px solid #f87171",borderRadius:"4px",padding:"4px 8px",cursor:"pointer"}}>
                         إلغاء الطلب
                       </button>
                     )}
