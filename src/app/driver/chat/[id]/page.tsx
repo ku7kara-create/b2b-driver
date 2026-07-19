@@ -58,7 +58,6 @@ export default function DriverChatPage() {
                 color: m.senderId === myId ? "#ffffff" : "#1a1a1a",
               }}>
                 <p className="text-sm">{m.text}</p>
-                <p className={`text-[10px] mt-1 ${m.senderId === myId ? "text-white/70" : "text-gray-400"}`}>{m.sender.name}</p>
               </div>
             </div>
           ))}
