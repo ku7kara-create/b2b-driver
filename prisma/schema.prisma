@@ -26,6 +26,7 @@ model User {
   notifications Notification[]
   reviewsGiven  Review[]       @relation("Reviewer")
   reviewsRcvd   Review[]       @relation("Reviewee")
+  messages      Message[]
 }
 
 model Driver {
@@ -103,6 +104,7 @@ model Trip {
   driver   Driver?  @relation("DriverTrips", fields: [driverId], references: [id])
   bids     Bid[]
   reviews  Review[]
+  messages Message[]
 }
 
 model Bid {
@@ -142,4 +144,15 @@ model Review {
   trip     Trip @relation(fields: [tripId], references: [id])
   reviewer User @relation("Reviewer", fields: [reviewerId], references: [id])
   reviewee User @relation("Reviewee", fields: [revieweeId], references: [id])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  tripId    String
+  senderId  String
+  text      String
+  createdAt DateTime @default(now())
+
+  trip   Trip @relation(fields: [tripId], references: [id])
+  sender User @relation(fields: [senderId], references: [id])
 }
