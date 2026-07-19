@@ -50,7 +50,13 @@ export default function DriverChatPage() {
         {loading ? <p className="text-center text-gray-400">جاري التحميل...</p> :
           messages.map((m) => (
             <div key={m.id} className={`flex ${m.senderId === myId ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[75%] px-4 py-2 rounded-xl ${m.senderId === myId ? "bg-[#FF8C00] text-white" : "bg-[#F0F2F5] text-[#1a1a1a]"}`}>
+              <div style={{
+                maxWidth: "75%",
+                padding: "8px 16px",
+                borderRadius: "12px",
+                backgroundColor: m.senderId === myId ? "#FF8C00" : "#F0F2F5",
+                color: m.senderId === myId ? "#ffffff" : "#1a1a1a",
+              }}>
                 <p className="text-sm">{m.text}</p>
                 <p className={`text-[10px] mt-1 ${m.senderId === myId ? "text-white/70" : "text-gray-400"}`}>{m.sender.name}</p>
               </div>
@@ -60,7 +66,7 @@ export default function DriverChatPage() {
       </main>
       <div className="bg-white border-t border-gray-200 p-3 flex gap-2">
         <input value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="اكتب رسالة..." className="flex-1 h-12 px-4 border border-[#E0E0E0] rounded-lg focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00] bg-white" />
-        <button onClick={send} className="bg-[#FF8C00] text-white px-6 rounded-lg font-bold"><span className="material-symbols-outlined">send</span></button>
+        <button onClick={send} style={{ backgroundColor: "#FF8C00", color: "white", padding: "0 24px", borderRadius: "8px", fontWeight: "bold", border: "none", cursor: "pointer", fontSize: "16px" }}><span className="material-symbols-outlined">send</span></button>
       </div>
     </div>
   );
