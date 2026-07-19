@@ -24,11 +24,12 @@ function FitBounds({ pickup, dropoff }: { pickup: [number, number]; dropoff: [nu
 export default function TripMap({ pickup, dropoff }: { pickup: [number, number]; dropoff: [number, number] }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return <div className="h-64 bg-gray-100 flex items-center justify-center"><span className="text-gray-400">جاري تحميل الخريطة...</span></div>;
+  if (!mounted) return <div style={{ height: "256px", width: "100%", backgroundColor: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "12px" }}><span style={{ color: "#9ca3af" }}>جاري تحميل الخريطة...</span></div>;
 
   return (
-    <div className="h-64 w-full">
-      <MapContainer center={pickup} zoom={11} className="h-full w-full">
+    <div style={{ height: "256px", width: "100%", overflow: "hidden", position: "relative", borderRadius: "12px" }}>
+      <style>{`.leaflet-container{overflow:hidden!important;border-radius:12px!important}.leaflet-tile-pane{overflow:hidden!important}`}</style>
+      <MapContainer center={pickup} zoom={11} style={{ height: "100%", width: "100%", borderRadius: "12px" }}>
         <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Marker position={pickup} />
         <Marker position={dropoff} />
