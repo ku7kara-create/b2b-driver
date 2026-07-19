@@ -150,8 +150,9 @@ export default function DriverBidPage() {
             {trip.cargoPhotos && trip.cargoPhotos.length > 0 && (
               <div className="flex gap-2 mt-3 flex-wrap">
                 {trip.cargoPhotos.split(",").filter(Boolean).map((img, i) => (
-                  <div key={i} className="w-24 h-24 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                    <img src={`/uploads/${img.trim()}`} alt={`صورة ${i+1}`} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <div key={i} className="px-3 py-2 bg-gray-100 rounded-lg text-xs text-gray-600 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">image</span>
+                    {img.trim()}
                   </div>
                 ))}
               </div>
