@@ -122,7 +122,7 @@ export default function CustomerTripPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <a href={`/customer/chat/${tripId}`} className="flex-1 bg-[#E05A2B] text-white py-3 rounded-lg font-bold flex items-center justify-center gap-1">
+              <a href={`/customer/chat/${tripId}`} className="flex-1 bg-[#FF8C00] text-white py-3 rounded-lg font-bold flex items-center justify-center gap-1">
                 <span className="material-symbols-outlined">chat</span> رسالة
               </a>
               <a href={`tel:${trip.driver.user.phone}`} className="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-1">
