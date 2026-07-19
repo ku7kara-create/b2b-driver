@@ -98,33 +98,35 @@ export default function CustomerTripPage() {
         )}
 
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-500">الحالة</span>
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-              {trip.status === "accepted" ? "في الطريق" : trip.status === "started" ? "جاري التوصيل" : trip.status}
-            </span>
-          </div>
-          {trip.agreedPrice && <p className="text-2xl font-bold text-[#E05A2B] text-center my-3">{trip.agreedPrice.toFixed(2)} LYD</p>}
-          <div className="space-y-2 text-sm">
-            <div className="flex items-start gap-2 cursor-pointer" onClick={() => copyText(trip.pickupAddress, "العنوان")}><span className="text-green-500 mt-0.5">📍</span><span className="flex-1">{trip.pickupAddress}</span><span className="material-symbols-outlined text-gray-300 text-sm">content_copy</span></div>
-            <div className="flex items-start gap-2 cursor-pointer" onClick={() => copyText(trip.dropoffAddress, "العنوان")}><span className="text-red-500 mt-0.5">📍</span><span className="flex-1">{trip.dropoffAddress}</span><span className="material-symbols-outlined text-gray-300 text-sm">content_copy</span></div>
+          <div className="flex justify-between items-center">
+            <div>
+              <span className="text-sm text-gray-500">الحالة</span>
+              <span className="block text-lg font-bold text-blue-600">
+                {trip.status === "accepted" ? "في الطريق" : trip.status === "started" ? "جاري التوصيل" : trip.status}
+              </span>
+            </div>
+            <div className="text-left">
+              <span className="text-sm text-gray-500">السعر</span>
+              <span className="block text-2xl font-extrabold text-[#E05A2B]">{trip.agreedPrice?.toFixed(2) || "—"} <span className="text-sm text-gray-400">LYD</span></span>
+            </div>
           </div>
         </div>
 
         {trip.driver && (
           <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center text-white"><span className="material-symbols-outlined">person</span></div>
-                <div><h3 className="font-bold">{trip.driver.user.name}</h3><p className="text-xs text-gray-500 cursor-pointer" onClick={() => copyText(trip.driver!.user.phone, "الهاتف")}>📋 {trip.driver.rating?.toFixed(1)}</p></div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-14 h-14 rounded-full bg-[#1e293b] flex items-center justify-center text-white text-xl"><span className="material-symbols-outlined">person</span></div>
+              <div className="flex-1">
+                <h3 className="font-bold text-lg">{trip.driver.user.name}</h3>
+                <p className="text-sm text-gray-500">⭐ {trip.driver.rating?.toFixed(1) || "0.0"}</p>
               </div>
             </div>
             <div className="flex gap-2">
-              <a href={`tel:${trip.driver.user.phone}`} className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined text-lg">call</span> اتصال
+              <a href={`/customer/chat/${tripId}`} className="flex-1 bg-[#E05A2B] text-white py-3 rounded-lg font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined">chat</span> رسالة
               </a>
-              <a href={`https://wa.me/${trip.driver.user.phone?.replace('+','')}`} target="_blank" rel="noreferrer" className="flex-1 bg-green-500 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined text-lg">chat</span> واتساب
+              <a href={`tel:${trip.driver.user.phone}`} className="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined">call</span> اتصال
               </a>
             </div>
           </div>

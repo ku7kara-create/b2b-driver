@@ -108,11 +108,11 @@ export default function DriverTripPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <a href={`tel:${trip.customer.phone}`} className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined text-lg">call</span> اتصال
+              <a href={`/driver/chat/${tripId}`} className="flex-1 bg-[#E05A2B] text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined">chat</span> رسالة
               </a>
-              <a href={`https://wa.me/${trip.customer.phone?.replace('+','')}`} target="_blank" rel="noreferrer" className="flex-1 bg-green-500 text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
-                <span className="material-symbols-outlined text-lg">chat</span> واتساب
+              <a href={`tel:${trip.customer.phone}`} className="flex-1 bg-green-600 text-white py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined">call</span> اتصال
               </a>
             </div>
           </div>
