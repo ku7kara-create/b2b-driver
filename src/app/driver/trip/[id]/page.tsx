@@ -61,7 +61,7 @@ export default function DriverTripPage() {
   }
 
   function navigateTo(lat: number, lng: number) {
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`, "_blank");
+    window.open(`geo:${lat},${lng}?q=${lat},${lng}`, "_blank");
   }
 
   if (loading) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center text-gray-400">جاري التحميل...</div>;
@@ -123,11 +123,11 @@ export default function DriverTripPage() {
             <>
               <button onClick={() => navigateTo(trip.pickupLat || 32.88, trip.pickupLng || 13.19)}
                 className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">navigation</span> توجيه لموقع الانطلاق
+                <span className="material-symbols-outlined">navigation</span> الانتقال إلى موقع الزبون (Google Maps)
               </button>
               <button onClick={() => updateStatus("started")} disabled={updating}
                 className="w-full bg-[#E05A2B] text-white font-bold py-3 rounded-lg">
-                {updating ? "جاري..." : "وصلت لموقع الانطلاق"}
+                {updating ? "جاري..." : "تأكيد الوصول للزبون"}
               </button>
             </>
           )}
@@ -136,11 +136,11 @@ export default function DriverTripPage() {
             <>
               <button onClick={() => navigateTo(trip.dropoffLat || 32.12, trip.dropoffLng || 20.07)}
                 className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">navigation</span> توجيه لموقع الوصول
+                <span className="material-symbols-outlined">navigation</span> الانتقال إلى وجهة التوصيل (Google Maps)
               </button>
               <button onClick={() => updateStatus("completed")} disabled={updating}
                 className="w-full bg-green-600 text-white font-bold py-3 rounded-lg">
-                {updating ? "جاري..." : "وصلت للموقع النهائي (إنهاء الرحلة)"}
+                {updating ? "جاري..." : "إنهاء الرحلة"}
               </button>
             </>
           )}
