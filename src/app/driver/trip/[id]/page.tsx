@@ -21,11 +21,29 @@ export default function DriverTripPage() {
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      try { const r = await fetch(`/api/driver/trips/${tripId}`); if (r.ok) setTrip((await r.json()).trip); } catch {}
-      setLoading(false);
-    })();
+    (async () => { try { const r = await fetch(`/api/driver/trips/${tripId}`); if (r.ok) setTrip((await r.json()).trip); } catch {}; setLoading(false); })();
   }, [tripId]);
+
+  useEffect(() => {
+    if (!trip || trip.status === "completed" || trip.status === "pending") return;
+    let watchId: number;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          try {
+            await fetch(`/api/driver/location`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ tripId, lat: latitude, lng: longitude }),
+            });
+          } catch {}
+        },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 },
+      );
+    }
+    return () => { if (watchId) navigator.geolocation.clearWatch(watchId); };
+  }, [trip?.status, tripId]);
 
   async function updateStatus(status: string) {
     setUpdating(true);
