@@ -61,7 +61,7 @@ export default function DriverTripPage() {
   }
 
   function navigateTo(lat: number, lng: number) {
-    window.open(`geo:${lat},${lng}?q=${lat},${lng}`, "_blank");
+    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, "_blank");
   }
 
   if (loading) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center text-gray-400">جاري التحميل...</div>;

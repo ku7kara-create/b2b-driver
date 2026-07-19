@@ -49,7 +49,7 @@ export default function CustomerChatPage() {
       <main className="flex-1 p-4 max-w-lg mx-auto w-full overflow-y-auto space-y-3">
         {loading ? <p className="text-center text-gray-400">جاري التحميل...</p> :
           messages.map((m) => (
-            <div key={m.id} className={`flex ${m.senderId === myId ? "justify-end" : "justify-start"}`}>
+            <div key={m.id} className={`flex ${m.senderId === myId ? "justify-start" : "justify-end"}`}>
               <div style={{
                 maxWidth: "75%",
                 padding: "8px 16px",
