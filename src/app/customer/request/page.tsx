@@ -257,7 +257,9 @@ export default function CustomerRequestPage() {
           )}
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-on-surface-variant px-1">موقع الانطلاق</label>
+            <label className="block text-sm font-medium text-on-surface-variant px-1">
+              {carMode === "parcel" ? "موقع استلام الطرد" : "موقع الانطلاق"}
+            </label>
             <div className="relative">
               <span className="material-symbols-outlined absolute right-3 top-3 text-outline">trip_origin</span>
               <input
@@ -276,7 +278,9 @@ export default function CustomerRequestPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-on-surface-variant px-1">موقع الوصول</label>
+            <label className="block text-sm font-medium text-on-surface-variant px-1">
+              {carMode === "parcel" ? "موقع تسليم الطرد" : "موقع الوصول"}
+            </label>
             <div className="relative">
               <span className="material-symbols-outlined absolute right-3 top-3 text-outline">location_on</span>
               <input
@@ -294,40 +298,28 @@ export default function CustomerRequestPage() {
             </button>
           </div>
 
-          {serviceType === "private_car" && (
+          {serviceType === "private_car" && carMode === "parcel" && (
             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-              <div>
-                <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsParcel(!isParcel)}>
-                  <span className="text-sm font-medium text-on-surface-variant">هل هذا طرد؟</span>
-                  <div style={{ width: "52px", height: "28px", borderRadius: "28px", backgroundColor: isParcel ? "#FF8C00" : "#d1d5db", transition: "0.3s", position: "relative", flexShrink: 0 }}>
-                    <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "white", position: "absolute", top: "3px", left: isParcel ? "27px" : "3px", transition: "0.3s" }} />
+              <p className="text-xs text-gray-400">توصيل أمانات وطرود</p>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-on-surface-variant px-1">صورة الطرد</label>
+                <label className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer hover:border-secondary-container transition-colors">
+                  <span className="material-symbols-outlined text-4xl text-outline">add_a_photo</span>
+                  <span className="text-sm text-on-surface-variant">اضغط لإضافة صور الطرد</span>
+                  <input type="file" accept="image/*" multiple onChange={handlePhotoChange} className="hidden" />
+                </label>
+                {photoPreviews.length > 0 && (
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {photoPreviews.map((src, i) => (
+                      <img key={i} src={src} alt={`صورة ${i + 1}`} className="w-20 h-20 object-cover rounded-lg border border-outline-variant" />
+                    ))}
                   </div>
-                </div>
-                <p className="text-xs text-gray-400 mt-2">إذا كان لديك أمانة، طرد، أو بضاعة تود إرسالها مع السائق دون مرافقته، يرجى تفعيل هذا الخيار لتزويدنا بتفاصيل المستلم.</p>
+                )}
               </div>
-              {isParcel && (
-                <>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-on-surface-variant px-1">صورة الطرد</label>
-                    <label className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer hover:border-secondary-container transition-colors">
-                      <span className="material-symbols-outlined text-4xl text-outline">add_a_photo</span>
-                      <span className="text-sm text-on-surface-variant">اضغط لإضافة صورة الطرد</span>
-                      <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                    </label>
-                    {photoPreviews.length > 0 && (
-                      <div className="flex gap-2 flex-wrap mt-2">
-                        {photoPreviews.map((src, i) => (
-                          <img key={i} src={src} alt={`صورة ${i + 1}`} className="w-20 h-20 object-cover rounded-lg border border-outline-variant" />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-on-surface-variant px-1">رقم المستلم</label>
-                    <input type="tel" className="w-full px-3 h-12 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary-container text-base text-left" dir="ltr" placeholder="09xxxxxxxx" value={recipientPhone} onChange={(e) => setRecipientPhone(e.target.value)} required />
-                  </div>
-                </>
-              )}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-on-surface-variant px-1">رقم المستلم</label>
+                <input type="tel" className="w-full px-3 h-12 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary-container text-base text-left" dir="ltr" placeholder="09xxxxxxxx" value={recipientPhone} onChange={(e) => setRecipientPhone(e.target.value)} required />
+              </div>
             </div>
           )}
 
