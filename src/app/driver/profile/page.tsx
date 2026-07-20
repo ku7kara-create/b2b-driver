@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 const VEHICLE_LABELS: Record<string, string> = {
   car: "سيارة خاصة", porter: "بورتر وكنتر", tow_truck: "ساحبة", truck: "بورتر وكنتر", bike: "دراجة",
+  private_car: "سيارة خاصة", porter_canter: "بورتر وكنتر",
 };
 
 export default function DriverProfilePage() {
@@ -26,31 +27,69 @@ export default function DriverProfilePage() {
     })();
   }, []);
 
-  function getDaysRemaining(expiry: string | null): number | null {
-    if (!expiry) return null;
-    return Math.ceil((new Date(expiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  }
-  const days = getDaysRemaining(sub?.subscriptionExpiry || null);
+  const days = sub?.subscriptionExpiry
+    ? Math.ceil((new Date(sub.subscriptionExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9]">
+    <div className="min-h-screen bg-[#F9F9F9] pb-24">
       <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse items-center px-4 h-16">
         <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
         <h1 className="text-lg font-bold text-[#091426] mr-4">حسابي</h1>
       </header>
+
       <main className="max-w-lg mx-auto px-4 py-8 space-y-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
-          <div className="w-20 h-20 rounded-full bg-[#1e293b] flex items-center justify-center mx-auto mb-4"><span className="material-symbols-outlined text-white text-4xl">person</span></div>
-          <h2 className="text-xl font-bold text-[#091426]">{session?.user?.name || "سائق"}</h2>
-          <p className="text-gray-500 text-sm mt-1">{(session?.user as any)?.phone || ""}</p>
-          {vehicle && <p className="text-[#E05A2B] text-sm mt-1 font-bold">{VEHICLE_LABELS[vehicle] || vehicle}</p>}
+        {/* Profile Card */}
+        <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "24px", textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", border: "1px solid #e5e7eb" }}>
+          <div style={{ width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "#FF8C00", color: "white", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "32px", fontWeight: "bold" }}>
+            {session?.user?.name?.charAt(0) || "س"}
+          </div>
+          <h2 style={{ fontSize: "20px", fontWeight: "bold", color: "#212121", marginBottom: "4px" }}>{session?.user?.name || "سائق"}</h2>
+          <p style={{ fontSize: "14px", color: "#6b7280", marginBottom: "2px", direction: "ltr" }}>{(session?.user as any)?.phone || ""}</p>
+          {vehicle && <p style={{ fontSize: "14px", color: "#FF8C00", fontWeight: "bold", marginTop: "4px" }}>🚛 {VEHICLE_LABELS[vehicle] || vehicle}</p>}
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <h3 className="font-bold text-[#091426] mb-4">حالة الاشتراك</h3>
-          <div className="flex items-center justify-between"><span className="text-sm text-gray-500">الحالة</span><span className={`px-3 py-1 rounded-full text-xs font-bold ${sub?.subscriptionStatus === "active" ? "bg-green-100 text-green-700" : sub?.subscriptionStatus === "pending" ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}`}>{sub?.subscriptionStatus === "active" ? "نشط" : sub?.subscriptionStatus === "pending" ? "معلق" : "غير نشط"}</span></div>
-          {days !== null && <div className="flex items-center justify-between mt-3"><span className="text-sm text-gray-500">المتبقي</span><span className={`text-sm font-bold ${days <= 5 ? "text-red-500" : "text-green-600"}`}>{days <= 0 ? "منتهي" : `${days} يوم`}</span></div>}
+
+        {/* Subscription Card */}
+        <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", border: "1px solid #e5e7eb" }}>
+          <h3 style={{ fontSize: "16px", fontWeight: "bold", color: "#212121", marginBottom: "16px" }}>حالة الاشتراك</h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #f3f4f6" }}>
+            <span style={{ fontSize: "14px", color: "#6b7280" }}>الحالة</span>
+            <span style={{ padding: "4px 12px", borderRadius: "9999px", fontSize: "13px", fontWeight: "bold", backgroundColor: sub?.subscriptionStatus === "active" ? "#dcfce7" : "#fef3c7", color: sub?.subscriptionStatus === "active" ? "#166534" : "#92400e" }}>
+              {sub?.subscriptionStatus === "active" ? "نشط" : sub?.subscriptionStatus === "pending" ? "معلق" : "غير نشط"}
+            </span>
+          </div>
+          {days !== null && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0" }}>
+              <span style={{ fontSize: "14px", color: "#6b7280" }}>المتبقي</span>
+              <span style={{ fontSize: "16px", fontWeight: "bold", color: days <= 5 ? "#dc2626" : "#16a34a" }}>
+                {days <= 0 ? "منتهي" : `${days} يوم`}
+              </span>
+            </div>
+          )}
         </div>
-        <button onClick={() => signOut({ redirect: true, callbackUrl: "/login" })} className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-md text-center cursor-pointer text-base">تسجيل الخروج</button>
+
+        {/* Logout Button */}
+        <button
+          onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+          style={{
+            width: "100%",
+            padding: "16px",
+            backgroundColor: "#fef2f2",
+            color: "#dc2626",
+            border: "2px solid #fca5a5",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "16px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+          }}
+        >
+          <span className="material-symbols-outlined">logout</span>
+          تسجيل الخروج
+        </button>
       </main>
     </div>
   );
