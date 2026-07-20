@@ -56,6 +56,11 @@ export async function GET(request: NextRequest) {
         driverId: null,
         customer: { city: driverCity },
         serviceType: { in: serviceTypes },
+        OR: [
+          { preferredGender: null },
+          { preferredGender: "any" },
+          { preferredGender: driver.user.gender || "ذكر" },
+        ],
       },
       orderBy: { createdAt: "desc" },
       take: 20,

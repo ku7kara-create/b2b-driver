@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
       password,
       role,
       city,
+      gender,
       idNumber,
       licenseType,
       vehicleType,
@@ -57,6 +58,7 @@ export async function POST(request: NextRequest) {
         passwordHash,
         role,
         city: city || "بني وليد",
+        gender: gender || null,
       },
     });
 

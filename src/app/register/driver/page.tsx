@@ -23,6 +23,7 @@ export default function DriverRegisterPage() {
     fullName: "",
     phone: "",
     city: "بني وليد",
+    gender: "ذكر",
     idNumber: "",
     licenseType: "",
     vehicleType: "",
@@ -77,6 +78,7 @@ export default function DriverRegisterPage() {
           licenseType: form.licenseType,
           vehicleType: form.vehicleType,
           city: form.city,
+          gender: form.gender,
         }),
       });
 
@@ -190,6 +192,20 @@ export default function DriverRegisterPage() {
                 <option value="بني وليد">بني وليد</option>
                 <option value="بنغازي">بنغازي</option>
               </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-on-surface-variant px-1">الجنس</label>
+              <div className="flex gap-4 py-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="gender" value="ذكر" checked={form.gender === "ذكر"} onChange={(e) => updateField("gender", e.target.value)} className="text-[#FF8C00]" />
+                  <span className="text-sm">ذكر</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="gender" value="أنثى" checked={form.gender === "أنثى"} onChange={(e) => updateField("gender", e.target.value)} className="text-[#FF8C00]" />
+                  <span className="text-sm">أنثى</span>
+                </label>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

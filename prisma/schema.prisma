@@ -17,6 +17,7 @@ model User {
   role          String         @default("customer")
   city          String         @default("بني وليد")
   assignedCity  String?
+  gender        String?
   isApproved    Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -93,6 +94,7 @@ model Trip {
   cargoDetails     String?
   cargoPhotos      String?
   vehicleMakeModel String?
+  preferredGender  String?
   status           String    @default("pending")
   agreedPrice      Float?
   acceptedBidId    String?

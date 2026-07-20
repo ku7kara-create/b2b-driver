@@ -40,6 +40,7 @@ export default function CustomerRequestPage() {
   const [mapTarget, setMapTarget] = useState<"pickup" | "dropoff" | null>(null);
   const [isParcel, setIsParcel] = useState(false);
   const [recipientPhone, setRecipientPhone] = useState("");
+  const [preferredGender, setPreferredGender] = useState("any");
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -76,19 +77,19 @@ export default function CustomerRequestPage() {
         dropoffLng: form.dropoffLng,
       };
 
-      if (serviceType === "private_car" && isParcel) {
-        body.isParcel = true;
-        body.recipientPhone = recipientPhone;
-        if (form.cargoPhotos.length > 0) {
-          const fd = new FormData();
-          form.cargoPhotos.forEach((f) => fd.append("files", f));
-          try {
-            const upRes = await fetch("/api/upload", { method: "POST", body: fd });
-            if (upRes.ok) {
-              const upData = await upRes.json();
-              body.cargoPhotos = upData.files.join(",");
-            }
-          } catch {}
+      if (serviceType === "private_car") {
+        body.preferredGender = preferredGender;
+        if (carMode === "parcel") {
+          body.isParcel = true;
+          body.recipientPhone = recipientPhone;
+          if (form.cargoPhotos.length > 0) {
+            const fd = new FormData();
+            form.cargoPhotos.forEach((f) => fd.append("files", f));
+            try {
+              const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+              if (upRes.ok) { const upData = await upRes.json(); body.cargoPhotos = upData.files.join(","); }
+            } catch {}
+          }
         }
       }
 
@@ -297,6 +298,20 @@ export default function CustomerRequestPage() {
               تحديد الموقع على الخريطة
             </button>
           </div>
+
+          {serviceType === "private_car" && (
+            <div className="bg-gray-50 rounded-xl p-4">
+              <label className="block text-sm font-medium text-on-surface-variant mb-2">جنس السائق المفضل</label>
+              <div className="flex gap-4">
+                {[{ value: "any", label: "الكل" }, { value: "ذكر", label: "رجالي" }, { value: "أنثى", label: "نسائي" }].map((g) => (
+                  <label key={g.value} className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="preferredGender" value={g.value} checked={preferredGender === g.value} onChange={(e) => setPreferredGender(e.target.value)} />
+                    <span className="text-sm">{g.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           {serviceType === "private_car" && carMode === "parcel" && (
             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
