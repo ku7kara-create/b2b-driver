@@ -21,6 +21,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function AdminTripsPage() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -32,15 +33,18 @@ export default function AdminTripsPage() {
     })();
   }, []);
 
-  if (loading) return <div className="text-center py-20 text-gray-400">جاري التحميل...</div>;
+    const filteredTrips = search ? trips.filter((t) => t.id.toLowerCase().includes(search.toLowerCase())) : trips;
+
+    if (loading) return <div className="text-center py-20 text-gray-400">جاري التحميل...</div>;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#091426]">سجل الرحلات</h1>
         <p className="text-sm text-gray-500 mt-1">{trips.length} رحلة</p>
+        <input type="text" placeholder="🔍 بحث برقم الرحلة..." value={search} onChange={(e) => setSearch(e.target.value)}
+          className="mt-3 w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg text-sm focus:border-[#FF8C00] focus:ring-1 focus:ring-[#FF8C00]" dir="ltr" />
       </div>
-
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm">
@@ -56,10 +60,10 @@ export default function AdminTripsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {trips.length === 0 ? (
+              {filteredTrips.length === 0 ? (
                 <tr><td colSpan={7} className="px-4 py-16 text-center text-gray-400">لا توجد رحلات</td></tr>
               ) : (
-                trips.map((t) => (
+                filteredTrips.map((t) => (
                   <tr key={t.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium text-[#091426]">#{t.id.slice(-8)}</td>
                     <td className="px-4 py-3 text-gray-500">{SERVICE_LABELS[t.serviceType] || t.serviceType}</td>
