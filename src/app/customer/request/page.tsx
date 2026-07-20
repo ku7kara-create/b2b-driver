@@ -21,6 +21,7 @@ export default function CustomerRequestPage() {
   const { toast } = useToast();
 
   const [step, setStep] = useState(preselectedType ? 2 : 1);
+  const [carMode, setCarMode] = useState<"personal" | "parcel" | null>(null);
   const [serviceType, setServiceType] = useState(preselectedType);
   const [form, setForm] = useState({
     pickupAddress: "",
@@ -52,7 +53,11 @@ export default function CustomerRequestPage() {
 
   function selectService(type: string) {
     setServiceType(type);
-    setStep(2);
+    if (type === "private_car") {
+      setStep(3); // sub-options step
+    } else {
+      setStep(2); // form step
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -197,6 +202,37 @@ export default function CustomerRequestPage() {
                 </span>
               </button>
             ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (step === 3) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
+          <button onClick={() => { setStep(1); setServiceType(""); }} className="p-2 hover:bg-surface-container-low rounded-full">
+            <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
+          </button>
+          <h1 className="text-xl font-semibold text-on-surface mr-4">سيارة خاصة</h1>
+        </header>
+
+        <main className="flex-grow flex items-center justify-center px-4 py-8">
+          <div className="w-full max-w-sm space-y-4">
+            <h2 className="text-lg font-bold text-[#091426] text-center mb-6">اختر نوع التوصيل</h2>
+            <button onClick={() => { setCarMode("personal"); setIsParcel(false); setStep(2); }}
+              className="w-full bg-white border-2 border-gray-200 hover:border-[#FF8C00] rounded-2xl p-6 text-center transition-all cursor-pointer">
+              <span className="material-symbols-outlined text-5xl text-[#091426] mb-3 block">person</span>
+              <h3 className="text-lg font-bold text-[#091426] mb-1">توصيل شخصي</h3>
+              <p className="text-sm text-gray-500">طلب سيارة خاصة للتنقل الشخصي</p>
+            </button>
+            <button onClick={() => { setCarMode("parcel"); setIsParcel(true); setStep(2); }}
+              className="w-full bg-white border-2 border-gray-200 hover:border-[#FF8C00] rounded-2xl p-6 text-center transition-all cursor-pointer">
+              <span className="material-symbols-outlined text-5xl text-[#091426] mb-3 block">package_2</span>
+              <h3 className="text-lg font-bold text-[#091426] mb-1">توصيل أمانات وطرود</h3>
+              <p className="text-sm text-gray-500">إرسال طرد أو أمانة مع السائق</p>
+            </button>
           </div>
         </main>
       </div>
