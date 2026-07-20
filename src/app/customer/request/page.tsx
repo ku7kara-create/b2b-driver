@@ -20,7 +20,7 @@ export default function CustomerRequestPage() {
   const preselectedType = searchParams.get("type") || "";
   const { toast } = useToast();
 
-  const [step, setStep] = useState(preselectedType ? 2 : 1);
+  const [step, setStep] = useState(preselectedType === "private_car" ? 3 : preselectedType ? 2 : 1);
   const [carMode, setCarMode] = useState<"personal" | "parcel" | null>(null);
   const [serviceType, setServiceType] = useState(preselectedType);
   const [form, setForm] = useState({
