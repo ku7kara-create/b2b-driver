@@ -47,7 +47,8 @@ export default function CustomerDashboardPage() {
       }
       if (allRes.ok) {
         const d = await allRes.json();
-        setRecentTrips((d.trips || []).slice(0, 5));
+        const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+        setRecentTrips((d.trips || []).filter((t: Trip) => new Date(t.createdAt).getTime() > dayAgo).slice(0, 5));
       }
     } catch {}
   }, []);
