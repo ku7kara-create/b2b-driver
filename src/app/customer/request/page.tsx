@@ -260,15 +260,15 @@ export default function CustomerRequestPage() {
 
           {serviceType === "private_car" && (
             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-              <label className="flex items-center justify-between cursor-pointer">
-                <span className="text-sm font-medium text-on-surface-variant">هل هذا طرد؟</span>
-                <div style={{ position: "relative", display: "inline-block", width: "52px", height: "28px" }}>
-                  <input type="checkbox" checked={isParcel} onChange={(e) => setIsParcel(e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
-                  <span onClick={() => setIsParcel(!isParcel)} style={{ position: "absolute", cursor: "pointer", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: isParcel ? "#FF8C00" : "#d1d5db", borderRadius: "28px", transition: "0.3s" }}>
-                    <span style={{ position: "absolute", height: "22px", width: "22px", left: isParcel ? "27px" : "3px", bottom: "3px", backgroundColor: "white", borderRadius: "50%", transition: "0.3s" }} />
-                  </span>
+              <div>
+                <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsParcel(!isParcel)}>
+                  <span className="text-sm font-medium text-on-surface-variant">هل هذا طرد؟</span>
+                  <div style={{ width: "52px", height: "28px", borderRadius: "28px", backgroundColor: isParcel ? "#FF8C00" : "#d1d5db", transition: "0.3s", position: "relative", flexShrink: 0 }}>
+                    <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "white", position: "absolute", top: "3px", left: isParcel ? "27px" : "3px", transition: "0.3s" }} />
+                  </div>
                 </div>
-              </label>
+                <p className="text-xs text-gray-400 mt-2">إذا كان لديك أمانة، طرد، أو بضاعة تود إرسالها مع السائق دون مرافقته، يرجى تفعيل هذا الخيار لتزويدنا بتفاصيل المستلم.</p>
+              </div>
               {isParcel && (
                 <>
                   <div className="space-y-2">
