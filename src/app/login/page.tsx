@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -10,8 +10,21 @@ export default function LoginPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("b2b-login");
+      if (saved) {
+        const { phone: p, password: pw } = JSON.parse(saved);
+        setPhone(p || "");
+        setPassword(pw || "");
+        setRememberMe(true);
+      }
+    } catch {}
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,6 +46,11 @@ export default function LoginPage() {
         setError("رقم الهاتف أو كلمة المرور غير صحيحة");
       }
     } else if (result?.ok) {
+      if (rememberMe) {
+        localStorage.setItem("b2b-login", JSON.stringify({ phone, password }));
+      } else {
+        localStorage.removeItem("b2b-login");
+      }
       const session = await getSession();
       const role = (session?.user as any)?.role;
       if (role === "admin") router.push("/admin/dashboard");
@@ -95,6 +113,13 @@ export default function LoginPage() {
 
           <div className="text-right">
             <a href="#" className="text-sm font-medium text-[#E05A2B] hover:underline">نسيت كلمة المرور؟</a>
+          </div>
+
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setRememberMe(!rememberMe)}>
+            <div style={{ width: "20px", height: "20px", borderRadius: "4px", border: `2px solid ${rememberMe ? "#FF8C00" : "#d1d5db"}`, backgroundColor: rememberMe ? "#FF8C00" : "white", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s", flexShrink: 0 }}>
+              {rememberMe && <span style={{ color: "white", fontSize: "14px", lineHeight: 1 }}>✓</span>}
+            </div>
+            <span className="text-sm text-gray-600">حفظ البيانات</span>
           </div>
 
         </form>
