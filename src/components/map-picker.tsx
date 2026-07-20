@@ -20,20 +20,23 @@ function SizeInvalidator() {
   return null;
 }
 
-function MyLocationButton() {
+function MyLocationButton({ onLocate }: { onLocate: (lat: number, lng: number) => void }) {
   const map = useMap();
   const locate = () => {
-    map.locate({ setView: true, maxZoom: 16 });
+    map.locate({ setView: true, maxZoom: 17 }).on("locationfound", (e) => {
+      map.setView(e.latlng, 17);
+      onLocate(e.latlng.lat, e.latlng.lng);
+    });
   };
-  useEffect(() => { locate(); }, []);
+  useEffect(() => { setTimeout(() => locate(), 500); }, []);
   return (
     <div style={{ position: "absolute", bottom: "100px", left: "10px", zIndex: 1000 }}>
       <button onClick={locate} style={{
-        width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "white",
-        border: "2px solid #FF8C00", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+        width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "white",
+        border: "2px solid #FF8C00", boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
         display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
       }}>
-        <span className="material-symbols-outlined" style={{ color: "#FF8C00", fontSize: "20px" }}>my_location</span>
+        <span className="material-symbols-outlined" style={{ color: "#FF8C00", fontSize: "22px" }}>my_location</span>
       </button>
     </div>
   );
@@ -90,7 +93,7 @@ function LocationPicker({
           </div>
         ) : (
           <div style={{ height: "450px", width: "100%", position: "relative" }}>
-            <MapContainer center={position} zoom={15} style={{ height: "100%", width: "100%" }}>
+            <MapContainer center={position} zoom={17} style={{ height: "100%", width: "100%" }}>
               <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker
                 position={position}
@@ -104,7 +107,7 @@ function LocationPicker({
               />
               <MapClickHandler />
               <SizeInvalidator />
-              <MyLocationButton />
+              <MyLocationButton onLocate={(lat, lng) => setPosition([lat, lng])} />
             </MapContainer>
           </div>
         )}
