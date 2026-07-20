@@ -9,30 +9,25 @@ export default function CustomerProfilePage() {
   return (
     <div className="min-h-screen bg-[#F9F9F9] pb-20">
       <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse items-center w-full px-4 h-16">
-        <Link href="/customer/dashboard" className="p-2 hover:bg-gray-100 rounded-full">
-          <span className="material-symbols-outlined">arrow_forward</span>
-        </Link>
+        <Link href="/customer/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
         <h1 className="text-lg font-bold text-[#091426] mr-4">حسابي</h1>
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-8 space-y-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
-          <div className="w-20 h-20 rounded-full bg-[#1e293b] flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-white text-4xl">person</span>
+        <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "24px", textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", border: "1px solid #e5e7eb" }}>
+          <div style={{ width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "#FF8C00", color: "white", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", fontSize: "32px", fontWeight: "bold" }}>
+            {session?.user?.name?.charAt(0) || "ز"}
           </div>
-          <h2 className="text-xl font-bold text-[#091426]">{session?.user?.name || "مستخدم"}</h2>
-          <p className="text-gray-500 text-sm mt-1">{(session?.user as any)?.phone || ""}</p>
-          <p className="text-gray-400 text-xs mt-1">زبون</p>
+          <h2 style={{ fontSize: "20px", fontWeight: "bold", color: "#212121", marginBottom: "4px" }}>{session?.user?.name || "زبون"}</h2>
+          <p style={{ fontSize: "14px", color: "#6b7280", marginBottom: "4px", direction: "ltr" }}>{(session?.user as any)?.phone || ""}</p>
+          <span style={{ padding: "2px 12px", borderRadius: "9999px", fontSize: "12px", fontWeight: "bold", backgroundColor: "#fef3c7", color: "#92400e" }}>زبون</span>
         </div>
 
-        <div className="w-full px-6 mt-8 flex justify-center">
-          <button
-            onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
-            className="w-full max-w-md py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-md text-center cursor-pointer text-base"
-          >
-            تسجيل الخروج
-          </button>
-        </div>
+        <button onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+          style={{ width: "100%", padding: "16px", backgroundColor: "#fef2f2", color: "#dc2626", border: "2px solid #fca5a5", borderRadius: "12px", fontWeight: "bold", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+          <span className="material-symbols-outlined">logout</span>
+          تسجيل الخروج
+        </button>
       </main>
 
       <nav className="fixed bottom-0 left-0 w-full z-50 bg-white border-t border-gray-200 flex flex-row-reverse justify-around items-center py-2 shadow-sm">
@@ -42,7 +37,7 @@ export default function CustomerProfilePage() {
           { href: "/customer/bids", icon: "local_shipping", label: "الطلبات" },
           { href: "/customer/profile", icon: "person", label: "حسابي" },
         ].map((it) => (
-          <Link key={it.href} href={it.href} className={`flex flex-col items-center px-3 py-1 ${it.label === "حسابي" ? "text-[#E05A2B]" : "text-gray-400"} hover:text-[#E05A2B]`}>
+          <Link key={it.href} href={it.href} className={`flex flex-col items-center px-3 py-1 ${it.label === "حسابي" ? "text-[#FF8C00]" : "text-gray-400"} hover:text-[#FF8C00]`}>
             <span className="material-symbols-outlined">{it.icon}</span>
             <span className="text-xs mt-1">{it.label}</span>
           </Link>

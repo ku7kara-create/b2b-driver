@@ -180,20 +180,6 @@ export default function CustomerRequestPage() {
               </button>
             ))}
           </div>
-
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            {[
-              { value: "500+", label: "سائق معتمد" },
-              { value: "24/7", label: "دعم فني" },
-              { value: "15 min", label: "متوسط الوصول" },
-              { value: "100%", label: "تأمين شامل" },
-            ].map((s) => (
-              <div key={s.label} className="p-4 bg-white rounded-lg border border-outline-variant">
-                <span className="block text-xl font-bold text-secondary">{s.value}</span>
-                <span className="text-sm text-on-surface-variant">{s.label}</span>
-              </div>
-            ))}
-          </div>
         </main>
       </div>
     );
