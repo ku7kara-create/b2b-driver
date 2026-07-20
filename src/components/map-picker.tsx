@@ -20,6 +20,25 @@ function SizeInvalidator() {
   return null;
 }
 
+function MyLocationButton() {
+  const map = useMap();
+  const locate = () => {
+    map.locate({ setView: true, maxZoom: 16 });
+  };
+  useEffect(() => { locate(); }, []);
+  return (
+    <div style={{ position: "absolute", bottom: "100px", left: "10px", zIndex: 1000 }}>
+      <button onClick={locate} style={{
+        width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "white",
+        border: "2px solid #FF8C00", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+        display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
+      }}>
+        <span className="material-symbols-outlined" style={{ color: "#FF8C00", fontSize: "20px" }}>my_location</span>
+      </button>
+    </div>
+  );
+}
+
 function LocationPicker({
   target,
   onSelect,
@@ -85,6 +104,7 @@ function LocationPicker({
               />
               <MapClickHandler />
               <SizeInvalidator />
+              <MyLocationButton />
             </MapContainer>
           </div>
         )}
