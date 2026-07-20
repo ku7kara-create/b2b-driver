@@ -37,6 +37,8 @@ export default function CustomerRequestPage() {
   const [error, setError] = useState("");
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [mapTarget, setMapTarget] = useState<"pickup" | "dropoff" | null>(null);
+  const [isParcel, setIsParcel] = useState(false);
+  const [recipientPhone, setRecipientPhone] = useState("");
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -68,6 +70,22 @@ export default function CustomerRequestPage() {
         dropoffLat: form.dropoffLat,
         dropoffLng: form.dropoffLng,
       };
+
+      if (serviceType === "private_car" && isParcel) {
+        body.isParcel = true;
+        body.recipientPhone = recipientPhone;
+        if (form.cargoPhotos.length > 0) {
+          const fd = new FormData();
+          form.cargoPhotos.forEach((f) => fd.append("files", f));
+          try {
+            const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+            if (upRes.ok) {
+              const upData = await upRes.json();
+              body.cargoPhotos = upData.files.join(",");
+            }
+          } catch {}
+        }
+      }
 
       if (serviceType === "porter") {
         body.cargoDetails = form.cargoDetails;
@@ -239,6 +257,43 @@ export default function CustomerRequestPage() {
               تحديد الموقع على الخريطة
             </button>
           </div>
+
+          {serviceType === "private_car" && (
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-sm font-medium text-on-surface-variant">هل هذا طرد؟</span>
+                <div style={{ position: "relative", display: "inline-block", width: "52px", height: "28px" }}>
+                  <input type="checkbox" checked={isParcel} onChange={(e) => setIsParcel(e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
+                  <span onClick={() => setIsParcel(!isParcel)} style={{ position: "absolute", cursor: "pointer", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: isParcel ? "#FF8C00" : "#d1d5db", borderRadius: "28px", transition: "0.3s" }}>
+                    <span style={{ position: "absolute", height: "22px", width: "22px", left: isParcel ? "27px" : "3px", bottom: "3px", backgroundColor: "white", borderRadius: "50%", transition: "0.3s" }} />
+                  </span>
+                </div>
+              </label>
+              {isParcel && (
+                <>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-on-surface-variant px-1">صورة الطرد</label>
+                    <label className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer hover:border-secondary-container transition-colors">
+                      <span className="material-symbols-outlined text-4xl text-outline">add_a_photo</span>
+                      <span className="text-sm text-on-surface-variant">اضغط لإضافة صورة الطرد</span>
+                      <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                    </label>
+                    {photoPreviews.length > 0 && (
+                      <div className="flex gap-2 flex-wrap mt-2">
+                        {photoPreviews.map((src, i) => (
+                          <img key={i} src={src} alt={`صورة ${i + 1}`} className="w-20 h-20 object-cover rounded-lg border border-outline-variant" />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-on-surface-variant px-1">رقم المستلم</label>
+                    <input type="tel" className="w-full px-3 h-12 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary-container text-base text-left" dir="ltr" placeholder="09xxxxxxxx" value={recipientPhone} onChange={(e) => setRecipientPhone(e.target.value)} required />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {serviceType === "porter" && (
             <>
