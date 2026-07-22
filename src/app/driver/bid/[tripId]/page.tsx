@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import { Header } from "@/components/header";
 
 const TripMap = dynamic(() => import("@/components/trip-map").catch(() => ({ default: () => <div className="h-64 bg-gray-100 flex items-center justify-center"><span className="text-gray-400">الخريطة غير متوفرة</span></div> })), { ssr: false });
 
@@ -29,6 +30,8 @@ export default function DriverBidPage() {
   const [bidStatus, setBidStatus] = useState<"pending" | "accepted" | "rejected" | "expired" | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [redirectIn, setRedirectIn] = useState<number | null>(null);
+  const timerStarted = useRef(false);
 
   useEffect(() => {
     (async () => {
@@ -37,15 +40,22 @@ export default function DriverBidPage() {
           fetch(`/api/driver/trips/${tripId}`),
           fetch(`/api/trips/${tripId}/bids`),
         ]);
-        if (tripRes.ok) setTrip((await tripRes.json()).trip);
-        else { setError("الرحلة غير موجودة"); setLoading(false); return; }
-        if (bidsRes.ok) {
+        if (!tripRes.ok) { setError("الرحلة غير موجودة"); setLoading(false); return; }
+        const tripData = (await tripRes.json()).trip;
+        setTrip(tripData);
+        if (tripData.status === "accepted") {
+          if (bidsRes.ok) {
+            const bidsData = await bidsRes.json();
+            const myAccepted = (bidsData.bids || []).find((b: any) => b.status === "accepted");
+            if (myAccepted) { setBidStatus("accepted"); setStatusMessage("تم قبول عرضك! جاري التحويل..."); setTimeout(() => router.push(`/driver/trip/${tripId}`), 1500); }
+            else { setBidStatus("expired"); setStatusMessage("تم قبول عرض سائق آخر لهذه الرحلة"); }
+          }
+        } else if (tripData.status !== "pending") {
+          setBidStatus("expired"); setStatusMessage("الرحلة لم تعد متاحة");
+        } else if (bidsRes.ok) {
           const bidsData = await bidsRes.json();
           const myPendingBid = (bidsData.bids || []).find((b: any) => b.status === "pending");
-          if (myPendingBid) {
-            setBidStatus("pending");
-            setStatusMessage("تم تقديم عرضك - في انتظار موافقة الزبون");
-          }
+          if (myPendingBid) { setBidStatus("pending"); setStatusMessage("تم تقديم عرضك - في انتظار موافقة الزبون"); }
         }
       } catch { setError("تعذر التحميل"); }
       setLoading(false);
@@ -67,38 +77,51 @@ export default function DriverBidPage() {
   }
 
   useEffect(() => {
-    if (bidStatus !== "pending") return;
     const iv = setInterval(async () => {
       try {
-        const r = await fetch(`/api/trips/${tripId}`);
-        if (r.ok) {
-          const d = await r.json();
-          const t = d.trip;
-          if (t.status === "accepted" && t.acceptedBidId) {
-            const bidRes = await fetch(`/api/trips/${tripId}/bids`);
-            if (bidRes.ok) {
-              const bd = await bidRes.json();
-              const myBid = (bd.bids || []).find((b: any) => b.status === "accepted");
-              if (myBid) {
-                setBidStatus("accepted");
-                setStatusMessage("تم قبول عرضك! جاري التحويل...");
-                setTimeout(() => router.push(`/driver/trip/${tripId}`), 1500);
-              } else {
-                setBidStatus("rejected");
-                setStatusMessage("تم قبول سائق آخر");
-              }
-              clearInterval(iv);
+        const r = await fetch(`/api/driver/trips/${tripId}`);
+        if (!r.ok) return;
+        const d = await r.json();
+        const t = d.trip;
+        if (t.status === "accepted") {
+          const bidRes = await fetch(`/api/trips/${tripId}/bids`);
+          if (bidRes.ok) {
+            const bd = await bidRes.json();
+            const mine = (bd.bids || []).find((b: any) => b.status === "accepted");
+            if (mine) { setBidStatus("accepted"); setStatusMessage("تم قبول عرضك! جاري التحويل..."); setTimeout(() => router.push(`/driver/trip/${tripId}`), 1500); }
+            else {
+              setBidStatus("expired");
+              const acceptedAt = t.acceptedAt ? new Date(t.acceptedAt).getTime() : Date.now();
+              const elapsed = Date.now() - acceptedAt;
+              const remaining = Math.max(0, Math.ceil((5 * 60 * 1000 - elapsed) / 1000));
+              setRedirectIn(remaining);
+              setStatusMessage(`تم قبول عرض سائق آخر لهذه الرحلة (سيتم إخفاؤها بعد ${remaining} ثانية)`);
             }
-          } else if (t.status !== "pending") {
-            setBidStatus("expired");
-            setStatusMessage("الرحلة لم تعد متاحة");
             clearInterval(iv);
           }
+        } else if (t.status !== "pending") {
+          setBidStatus("expired"); setStatusMessage("الرحلة لم تعد متاحة");
+          clearInterval(iv);
         }
       } catch {}
     }, 5000);
     return () => clearInterval(iv);
-  }, [bidStatus, tripId]);
+  }, [tripId]);
+
+  useEffect(() => {
+    if (redirectIn === null || timerStarted.current) return;
+    timerStarted.current = true;
+    const redirectAt = Date.now() + redirectIn * 1000;
+    const display = setInterval(() => {
+      const left = Math.max(0, Math.ceil((redirectAt - Date.now()) / 1000));
+      const m = Math.floor(left / 60);
+      const s = left % 60;
+      setStatusMessage(`تم قبول عرض سائق آخر لهذه الرحلة (سيتم إخفاؤها بعد ${m}:${s.toString().padStart(2, "0")})`);
+      if (left <= 0) { clearInterval(display); clearTimeout(redir); }
+    }, 1000);
+    const redir = setTimeout(() => { router.push("/driver/dashboard"); }, redirectIn * 1000);
+    return () => { clearInterval(display); clearTimeout(redir); };
+  }, [redirectIn]);
 
   if (loading) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center text-gray-400">جاري التحميل...</div>;
   if (!trip || error) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center"><div className="text-center"><span className="material-symbols-outlined text-6xl text-gray-300">error</span><p className="mt-4 text-gray-500">{error || "غير موجود"}</p><Link href="/driver/dashboard" className="text-[#E05A2B] font-bold mt-2 block">العودة</Link></div></div>;
@@ -106,10 +129,7 @@ export default function DriverBidPage() {
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
       <style>{`.clear-bid-input::-webkit-outer-spin-button,.clear-bid-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.clear-bid-input{-moz-appearance:textfield}`}</style>
-      <header className="bg-white border-b border-gray-200 flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-        <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-        <h1 className="text-lg font-bold text-[#091426] mr-4">تفاصيل الطلب</h1>
-      </header>
+      <Header title="تفاصيل الطلب" backHref="/driver/dashboard" />
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">

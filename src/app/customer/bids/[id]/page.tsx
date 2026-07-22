@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
+import { Header } from "@/components/header";
 
 interface Bid {
   id: string; driverId: string; price: number; status: string;
@@ -43,13 +44,7 @@ export default function CustomerBidsPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
-      <header className="bg-white sticky top-0 z-40 border-b border-gray-200 flex flex-row-reverse justify-between items-center w-full px-4 h-16">
-        <div className="flex items-center gap-3">
-          <Link href="/customer/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-          <h1 className="text-lg font-bold text-[#091426]">العروض والمزايدات</h1>
-        </div>
-        <button onClick={fetchBids} className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined text-gray-500">refresh</span></button>
-      </header>
+      <Header title="العروض والمزايدات" backHref="/customer/dashboard" />
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full">
         <div className="grid grid-cols-2 gap-3 mb-4">

@@ -14,6 +14,16 @@ export async function POST(
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
+    const admin = await prisma.user.findUnique({
+      where: { id: (session.user as any).id },
+      select: { assignedCity: true },
+    });
+    const target = await prisma.user.findUnique({ where: { id: userId }, select: { city: true } });
+    if (!target) return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+    if (target.city !== (admin?.assignedCity || "بني وليد")) {
+      return NextResponse.json({ error: "لا يمكن تعديل مستخدم من مدينة أخرى" }, { status: 403 });
+    }
+
     const { action } = await request.json();
 
     if (action === "block") {

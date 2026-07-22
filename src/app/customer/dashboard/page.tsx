@@ -98,14 +98,14 @@ export default function CustomerDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] pb-20">
-      <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse justify-between items-center w-full px-4 h-16">
+      <header style={{ backgroundColor: "#FF8C00" }} className="sticky top-0 z-50 flex flex-row-reverse justify-between items-center w-full px-4 h-16">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#1e293b] flex items-center justify-center text-white">
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center" style={{ color: "white" }}>
             <span className="material-symbols-outlined">person</span>
           </div>
-          <p className="text-sm font-medium text-gray-700">مرحباً</p>
+          <p className="text-sm font-medium" style={{ color: "white" }}>مرحباً</p>
         </div>
-        <h1 className="text-xl font-bold text-[#E05A2B]">B2B Driver</h1>
+        <h1 className="text-xl font-bold" style={{ color: "white" }}>B2B Driver</h1>
       </header>
 
       <main className="max-w-lg mx-auto px-4 mt-4 space-y-6">
@@ -138,7 +138,7 @@ export default function CustomerDashboardPage() {
                       {activeTrip.pickupAddress} → {activeTrip.dropoffAddress}
                     </div>
                     {activeTrip.status === "pending" && (
-                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { await fetch("/api/cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId: activeTrip.id }) }); setActiveTrip(null); setBids([]); } }} style={{marginTop:"8px",fontSize:"12px",color:"#f87171",backgroundColor:"transparent",border:"1px solid #f87171",borderRadius:"4px",padding:"4px 8px",cursor:"pointer"}}>
+                      <button onClick={async () => { if (confirm("هل أنت متأكد من إلغاء الطلب؟")) { const res = await fetch("/api/cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId: activeTrip.id }) }); setActiveTrip(null); setBids([]); if (res.ok) fetchData(); } }} style={{marginTop:"8px",fontSize:"12px",color:"#f87171",backgroundColor:"transparent",border:"1px solid #f87171",borderRadius:"4px",padding:"4px 8px",cursor:"pointer"}}>
                         إلغاء الطلب
                       </button>
                     )}
@@ -212,8 +212,8 @@ export default function CustomerDashboardPage() {
                         <h3 className="font-bold text-[#091426] text-sm">{SERVICE_LABELS[trip.serviceType]}</h3>
                         <p className="text-xs text-gray-500 truncate max-w-[200px]">{trip.pickupAddress}</p>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-full font-bold ${trip.status === "completed" ? "bg-green-100 text-green-700" : trip.status === "accepted" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}>
-                        {trip.status === "completed" ? "مكتمل" : trip.status === "accepted" ? "نشط" : "معلق"}
+                      <span className={`text-xs px-2 py-1 rounded-full font-bold ${trip.status === "completed" ? "bg-green-100 text-green-700" : trip.status === "accepted" ? "bg-blue-100 text-blue-700" : trip.status === "cancelled" ? "bg-red-100 text-red-600" : "bg-yellow-100 text-yellow-700"}`}>
+                        {trip.status === "completed" ? "مكتمل" : trip.status === "accepted" ? "نشط" : trip.status === "cancelled" ? "ملغاة" : "معلق"}
                       </span>
                     </Link>
                   ))}

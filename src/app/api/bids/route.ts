@@ -32,7 +32,10 @@ export async function POST(request: NextRequest) {
       }, { status: 403 });
     }
 
-    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+    const trip = await prisma.trip.findUnique({
+      where: { id: tripId },
+      include: { customer: { select: { city: true } } },
+    });
 
     if (!trip || trip.status !== "pending") {
       return NextResponse.json({ error: "الرحلة غير متاحة للعروض حالياً" }, { status: 400 });
@@ -40,6 +43,10 @@ export async function POST(request: NextRequest) {
 
     if (trip.customerId === driver.userId) {
       return NextResponse.json({ error: "لا يمكنك تقديم عرض على طلبك الخاص" }, { status: 400 });
+    }
+
+    if (trip.customer.city !== (driver.user.city || "بني وليد")) {
+      return NextResponse.json({ error: "لا يمكنك تقديم عرض على طلب خارج مدينتك" }, { status: 403 });
     }
 
     const existing = await prisma.bid.findFirst({

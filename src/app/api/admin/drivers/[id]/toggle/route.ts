@@ -14,6 +14,19 @@ export async function POST(
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
+    const admin = await prisma.user.findUnique({
+      where: { id: (session.user as any).id },
+      select: { assignedCity: true },
+    });
+    const driver = await prisma.driver.findUnique({
+      where: { id: driverId },
+      include: { user: { select: { city: true } } },
+    });
+    if (!driver) return NextResponse.json({ error: "السائق غير موجود" }, { status: 404 });
+    if (driver.user.city !== (admin?.assignedCity || "بني وليد")) {
+      return NextResponse.json({ error: "لا يمكن تعديل سائق من مدينة أخرى" }, { status: 403 });
+    }
+
     const { action } = await request.json();
 
     if (action === "activate") {

@@ -3,21 +3,26 @@ import Link from "next/link";
 interface HeaderProps {
   title: string;
   backHref?: string;
+  onBackClick?: () => void;
+  children?: React.ReactNode;
 }
 
-export function Header({ title, backHref = "/" }: HeaderProps) {
+export function Header({ title, backHref, onBackClick, children }: HeaderProps) {
   return (
-    <header className="w-full px-4 h-16 flex items-center justify-between bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
-      <Link
-        href={backHref}
-        className="p-2 rounded-full hover:bg-surface-variant transition-colors"
-      >
-        <span className="material-symbols-outlined text-primary">arrow_forward</span>
-      </Link>
-      <div className="flex items-center gap-2">
-        <span className="text-lg font-bold text-primary">B2B Driver</span>
+    <header style={{ backgroundColor: "#FF8C00", color: "white" }} className="w-full px-4 h-16 flex items-center justify-between sticky top-0 z-50">
+      <div className="flex items-center gap-3">
+        {onBackClick ? (
+          <button onClick={onBackClick} className="p-2 rounded-full hover:brightness-110 transition-all">
+            <span className="material-symbols-outlined text-white">arrow_forward</span>
+          </button>
+        ) : backHref ? (
+          <Link href={backHref} className="p-2 rounded-full hover:brightness-110 transition-all">
+            <span className="material-symbols-outlined text-white">arrow_forward</span>
+          </Link>
+        ) : null}
+        <h1 className="text-xl font-semibold text-white">{title}</h1>
       </div>
-      <h1 className="text-xl font-semibold text-on-surface">{title}</h1>
+      {children && <div className="flex items-center gap-2">{children}</div>}
     </header>
   );
 }

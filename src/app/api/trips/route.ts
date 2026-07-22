@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { serviceType, pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng, cargoDetails, cargoPhotos, vehicleMakeModel } = body;
+    const { serviceType, pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng, cargoDetails, cargoPhotos, vehicleMakeModel, preferredGender } = body;
 
     if (!serviceType || !pickupAddress || !dropoffAddress) {
       return NextResponse.json({ error: "جميع الحقول المطلوبة غير مكتملة" }, { status: 400 });
@@ -31,6 +31,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "نوع المركبة مطلوب لخدمة الساحبة" }, { status: 400 });
     }
 
+    const customer = await prisma.user.findUnique({
+      where: { id: (session.user as any).id },
+      select: { city: true },
+    });
+
     const trip = await prisma.trip.create({
       data: {
         customerId: (session.user as any).id,
@@ -41,6 +46,7 @@ export async function POST(request: NextRequest) {
         dropoffAddress: dropoffAddress || "موقع محدد على الخريطة",
         dropoffLat: parseFloat(dropoffLat) || 24.7742,
         dropoffLng: parseFloat(dropoffLng) || 46.7385,
+        preferredGender: preferredGender || null,
         cargoDetails: cargoDetails || null,
         cargoPhotos: cargoPhotos || null,
         vehicleMakeModel: vehicleMakeModel || null,
@@ -48,7 +54,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    broadcastNewTrip(trip.id, serviceType, pickupAddress);
+    broadcastNewTrip(trip.id, serviceType, pickupAddress, customer?.city || "بني وليد");
 
     return NextResponse.json({ tripId: trip.id }, { status: 201 });
   } catch (error) {

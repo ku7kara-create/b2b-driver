@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const SERVICE_LABELS: Record<string, string> = { car: "سيارة خاصة", private_car: "سيارة خاصة", porter: "بورتر", porter_canter: "بورتر", tow_truck: "ساحبة" };
+
 interface TripRequest {
   id: string;
   serviceType: string;
@@ -35,14 +37,14 @@ export default function DriverBidsListPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-surface border-b border-outline-variant w-full sticky top-0 z-50">
+      <header style={{ backgroundColor: "#FF8C00" }} className="w-full sticky top-0 z-50">
         <div className="flex flex-row-reverse justify-between items-center w-full px-4 py-2 max-w-5xl mx-auto h-16">
-          <Link href="/driver/dashboard" className="p-2 rounded-full hover:bg-surface-container-low transition-colors">
-            <span className="material-symbols-outlined text-primary">arrow_forward</span>
+          <Link href="/driver/dashboard" className="p-2 rounded-full hover:brightness-110 transition-all">
+            <span className="material-symbols-outlined" style={{ color: "white" }}>arrow_forward</span>
           </Link>
-          <h1 className="text-xl font-bold text-primary">العروض المتاحة</h1>
-          <button className="p-2 rounded-full hover:bg-surface-container-low transition-colors">
-            <span className="material-symbols-outlined text-primary">notifications</span>
+          <h1 className="text-xl font-bold" style={{ color: "white" }}>العروض المتاحة</h1>
+          <button className="p-2 rounded-full hover:brightness-110 transition-all">
+            <span className="material-symbols-outlined" style={{ color: "white" }}>notifications</span>
           </button>
         </div>
       </header>
@@ -82,7 +84,7 @@ export default function DriverBidsListPage() {
                     </div>
                   </div>
                   <span className="bg-secondary-fixed text-secondary text-xs font-bold px-2 py-1 rounded-md">
-                    {trip.serviceType === "car" ? "سيارة" : trip.serviceType === "porter" ? "بورتر" : "ساحبة"}
+                    {SERVICE_LABELS[trip.serviceType] || "سيارة خاصة"}
                   </span>
                 </div>
                 <div className="p-4 flex-grow space-y-4">

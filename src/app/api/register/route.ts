@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
       role,
       city,
       gender,
-      idNumber,
       licenseType,
       vehicleType,
     } = body;
@@ -70,7 +69,6 @@ export async function POST(request: NextRequest) {
           isAvailable: false,
           rating: 0,
           totalTrips: 0,
-          idNumber: idNumber || null,
           licenseType: licenseType || null,
         },
       });

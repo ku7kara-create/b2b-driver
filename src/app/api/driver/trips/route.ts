@@ -58,7 +58,6 @@ export async function GET(request: NextRequest) {
         serviceType: { in: serviceTypes },
         OR: [
           { preferredGender: null },
-          { preferredGender: "any" },
           { preferredGender: driver.user.gender || "ذكر" },
         ],
       },
@@ -66,7 +65,21 @@ export async function GET(request: NextRequest) {
       take: 20,
     });
 
-    return NextResponse.json({ trips });
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const graceTrips = await prisma.trip.findMany({
+      where: {
+        status: "accepted",
+        acceptedAt: { gte: fiveMinutesAgo },
+        customer: { city: driverCity },
+        bids: { some: { driverId: driver.id } },
+      },
+      orderBy: { acceptedAt: "desc" },
+      take: 20,
+    });
+
+    const allTrips = [...trips, ...graceTrips.map((t) => ({ ...t, gracePeriod: true }))];
+
+    return NextResponse.json({ trips: allTrips });
   } catch (error) {
     console.error("[Driver Trips] Error:", error);
     return NextResponse.json({ error: "حدث خطأ" }, { status: 500 });

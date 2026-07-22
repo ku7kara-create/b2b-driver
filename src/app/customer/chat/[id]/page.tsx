@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { Header } from "@/components/header";
+import { io } from "socket.io-client";
 
-interface Message { id: string; text: string; sender: { name: string }; senderId: string; createdAt: string; }
+interface ChatMessage { id: string; tripId: string; senderId: string; senderName: string; text: string; createdAt: string; }
 
 export default function CustomerChatPage() {
   const params = useParams(); const tripId = params?.id as string;
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [myId, setMyId] = useState("");
@@ -21,15 +23,24 @@ export default function CustomerChatPage() {
           fetch(`/api/messages?tripId=${tripId}`),
           fetch("/api/auth/session"),
         ]);
-        if (msgRes.ok) setMessages((await msgRes.json()).messages || []);
+        if (msgRes.ok) {
+          const raw = (await msgRes.json()).messages || [];
+          setMessages(raw.map((m: any) => ({ id: m.id, tripId, senderId: m.senderId, senderName: m.sender?.name || "", text: m.text, createdAt: m.createdAt })));
+        }
         if (sessRes.ok) setMyId(((await sessRes.json()) as any)?.user?.id || "");
       } catch {}
       setLoading(false);
     })();
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5002";
+    const s = io(socketUrl, { transports: ["websocket", "polling"], forceNew: true });
+    s.emit("trip:join", tripId);
+    s.on("chat:message", (m: ChatMessage) => {
+      setMessages((prev) => { if (prev.some((p) => p.id === m.id)) return prev; return [...prev, m]; });
+    });
     const iv = setInterval(async () => {
-      try { const r = await fetch(`/api/messages?tripId=${tripId}`); if (r.ok) setMessages((await r.json()).messages || []); } catch {}
+      try { const r = await fetch(`/api/messages?tripId=${tripId}`); if (r.ok) { const raw = (await r.json()).messages || []; setMessages(raw.map((m: any) => ({ id: m.id, tripId, senderId: m.senderId, senderName: m.sender?.name || "", text: m.text, createdAt: m.createdAt }))); } } catch {}
     }, 3000);
-    return () => clearInterval(iv);
+    return () => { clearInterval(iv); s.disconnect(); };
   }, [tripId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
@@ -37,15 +48,23 @@ export default function CustomerChatPage() {
   async function send() {
     if (!text.trim()) return;
     const t = text; setText("");
-    try { await fetch("/api/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId, text: t }) }); } catch {}
+    try {
+      const r = await fetch("/api/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId, text: t }) });
+      if (r.ok) {
+        const data = await r.json();
+        if (data?.message) {
+          setMessages((prev) => {
+            if (prev.some((p) => p.id === data.message.id)) return prev;
+            return [...prev, { id: data.message.id, tripId, senderId: data.message.senderId, senderName: data.message.sender?.name || "", text: data.message.text, createdAt: data.message.createdAt }];
+          });
+        }
+      }
+    } catch {}
   }
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
-      <header className="bg-white sticky top-0 z-40 border-b border-gray-200 flex flex-row-reverse items-center px-4 h-16">
-        <Link href={`/customer/trip/${tripId}`} className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-        <h1 className="text-lg font-bold text-[#091426] mr-4">المحادثة</h1>
-      </header>
+      <Header title="المحادثة" backHref={`/customer/trip/${tripId}`} />
       <main className="flex-1 p-4 max-w-lg mx-auto w-full overflow-y-auto space-y-3">
         {loading ? <p className="text-center text-gray-400">جاري التحميل...</p> :
           messages.map((m) => (

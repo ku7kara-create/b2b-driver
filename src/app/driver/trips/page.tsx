@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Header } from "@/components/header";
 
 interface Trip {
   id: string;
@@ -34,12 +35,7 @@ export default function DriverTripHistoryPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-        <Link href="/driver/dashboard" className="p-2 hover:bg-surface-container-low rounded-full">
-          <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-        </Link>
-        <h1 className="text-xl font-semibold text-on-surface mr-4">سجل الرحلات</h1>
-      </header>
+      <Header title="سجل الرحلات" backHref="/driver/dashboard" />
 
       <main className="max-w-2xl mx-auto p-4">
         {loading ? (

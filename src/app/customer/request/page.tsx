@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
+import { Header } from "@/components/header";
 
 const MapPickerModal = dynamic(() => import("@/components/map-picker"), { ssr: false });
 
@@ -40,7 +41,7 @@ export default function CustomerRequestPage() {
   const [mapTarget, setMapTarget] = useState<"pickup" | "dropoff" | null>(null);
   const [isParcel, setIsParcel] = useState(false);
   const [recipientPhone, setRecipientPhone] = useState("");
-  const [preferredGender, setPreferredGender] = useState("any");
+  const [preferredGender, setPreferredGender] = useState("ذكر");
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -137,12 +138,7 @@ export default function CustomerRequestPage() {
   if (step === 1) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-          <Link href="/customer/dashboard" className="p-2 hover:bg-surface-container-low rounded-full transition-colors">
-            <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-          </Link>
-          <h1 className="text-xl font-semibold text-on-surface mr-4">اختيار الخدمة</h1>
-        </header>
+        <Header title="اختيار الخدمة" backHref="/customer/dashboard" />
 
         <main className="flex-grow container mx-auto px-4 py-12 max-w-4xl">
           <div className="text-center mb-12">
@@ -179,8 +175,8 @@ export default function CustomerRequestPage() {
               <button
                 key={svc.type}
                 onClick={() => selectService(svc.type)}
-                className={`group bg-white/80 backdrop-blur-md rounded-xl p-6 flex flex-col items-center text-center transition-all hover:shadow-xl hover:-translate-y-1 relative ${
-                  svc.popular ? "border-2 border-secondary" : "border border-outline-variant"
+                className={`group bg-white rounded-xl p-6 flex flex-col items-center text-center transition-all hover:shadow-md hover:-translate-y-1 relative border border-gray-200 shadow-sm hover:border-orange-500 ${
+                  svc.popular ? "border-2 border-secondary" : ""
                 }`}
               >
                 {svc.popular && (
@@ -212,12 +208,7 @@ export default function CustomerRequestPage() {
   if (step === 3) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-          <button onClick={() => { setStep(1); setServiceType(""); }} className="p-2 hover:bg-surface-container-low rounded-full">
-            <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-          </button>
-          <h1 className="text-xl font-semibold text-on-surface mr-4">سيارة خاصة</h1>
-        </header>
+        <Header title="سيارة خاصة" onBackClick={() => { setStep(1); setServiceType(""); }} />
 
         <main className="flex-grow flex items-center justify-center px-4 py-8">
           <div className="w-full max-w-sm space-y-4">
@@ -242,14 +233,7 @@ export default function CustomerRequestPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16 sticky top-0 z-50">
-        <button onClick={() => setStep(1)} className="p-2 hover:bg-surface-container-low rounded-full">
-          <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-        </button>
-        <h1 className="text-xl font-semibold text-on-surface mr-4">
-          {SERVICES[serviceType]?.label || "طلب جديد"}
-        </h1>
-      </header>
+      <Header title={SERVICES[serviceType]?.label || "طلب جديد"} onBackClick={() => setStep(1)} />
 
       <main className="flex-grow flex items-center justify-center py-8 px-4">
         <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-6 bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant">
@@ -303,12 +287,14 @@ export default function CustomerRequestPage() {
             <div className="bg-gray-50 rounded-xl p-4">
               <label className="block text-sm font-medium text-on-surface-variant mb-2">جنس السائق المفضل</label>
               <div className="flex gap-4">
-                {[{ value: "any", label: "الكل" }, { value: "ذكر", label: "رجالي" }, { value: "أنثى", label: "نسائي" }].map((g) => (
-                  <label key={g.value} className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="preferredGender" value={g.value} checked={preferredGender === g.value} onChange={(e) => setPreferredGender(e.target.value)} />
-                    <span className="text-sm">{g.label}</span>
-                  </label>
-                ))}
+                <button type="button" onClick={() => setPreferredGender("ذكر")} className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer ${preferredGender === "ذكر" ? "border-[#FF8C00] bg-orange-50 text-[#FF8C00]" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}>
+                  <span className="material-symbols-outlined text-3xl">man</span>
+                  <span className="text-sm font-medium">رجالي</span>
+                </button>
+                <button type="button" onClick={() => setPreferredGender("أنثى")} className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer ${preferredGender === "أنثى" ? "border-[#FF8C00] bg-orange-50 text-[#FF8C00]" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}>
+                  <span className="material-symbols-outlined text-3xl">woman</span>
+                  <span className="text-sm font-medium">نسائي</span>
+                </button>
               </div>
             </div>
           )}

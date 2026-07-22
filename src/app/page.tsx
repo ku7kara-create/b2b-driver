@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function AccountSelectionPage() {
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
-      <header className="w-full px-4 h-16 flex items-center bg-white border-b border-gray-200 sticky top-0 z-50">
-        <span className="text-xl font-bold text-[#091426]">B2B Driver</span>
+      <header style={{ backgroundColor: "#FF8C00" }} className="w-full px-4 h-16 flex items-center sticky top-0 z-50">
+        <span style={{ color: "white" }} className="text-xl font-bold">B2B Driver</span>
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center px-4 py-8">

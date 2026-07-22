@@ -2,16 +2,14 @@
 
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { Header } from "@/components/header";
 
 export default function CustomerProfilePage() {
   const { data: session } = useSession();
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] pb-20">
-      <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse items-center w-full px-4 h-16">
-        <Link href="/customer/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-        <h1 className="text-lg font-bold text-[#091426] mr-4">حسابي</h1>
-      </header>
+      <Header title="حسابي" backHref="/customer/dashboard" />
 
       <main className="max-w-lg mx-auto px-4 py-8 space-y-4">
         <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "24px", textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", border: "1px solid #e5e7eb" }}>

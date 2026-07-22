@@ -8,6 +8,7 @@ interface PendingUser { id: string; name: string; phone: string; role: string; c
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
+  const [adminCity, setAdminCity] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function AdminDashboardPage() {
           const data = await res.json();
           setStats(data.stats);
           setPendingUsers(data.pendingUsers || []);
+          setAdminCity(data.adminCity || "");
         }
       } catch {}
       setLoading(false);
@@ -53,7 +55,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-[#091426]">لوحة التحكم</h1>
+        <h1 className="text-2xl font-bold text-[#091426]">لوحة التحكم{adminCity ? ` - مدينة ${adminCity}` : ""}</h1>
         <p className="text-sm text-gray-500 mt-1">مرحباً بك في لوحة إدارة B2B Driver</p>
       </div>
 

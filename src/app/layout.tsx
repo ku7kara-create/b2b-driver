@@ -1,5 +1,6 @@
 import "./globals.css";
 import Providers from "@/components/providers";
+import { FcmRegister } from "@/components/fcm-register";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,7 +11,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-[#1A1A2E] min-h-screen flex justify-center items-center font-sans antialiased m-0 p-0">
         <div className="w-full max-w-md min-h-screen bg-[#F9F9F9] shadow-2xl flex flex-col relative text-gray-900">
-          <Providers>{children}</Providers>
+          <Providers>
+            <FcmRegister />
+            {children}
+          </Providers>
         </div>
       </body>
     </html>

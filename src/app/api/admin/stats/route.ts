@@ -27,9 +27,9 @@ export async function GET(request: NextRequest) {
     const [usersCount, driversCount, tripsCount, completedTrips, revenue, pendingUsers] = await Promise.all([
       prisma.user.count({ where: { city: adminCity, role: { not: "admin" } } }),
       prisma.driver.count({ where: { user: { city: adminCity } } }),
-      prisma.trip.count(),
-      prisma.trip.count({ where: { status: "completed" } }),
-      prisma.trip.aggregate({ where: { status: "completed" }, _sum: { agreedPrice: true } }),
+      prisma.trip.count({ where: { customer: { city: adminCity } } }),
+      prisma.trip.count({ where: { status: "completed", customer: { city: adminCity } } }),
+      prisma.trip.aggregate({ where: { status: "completed", customer: { city: adminCity } }, _sum: { agreedPrice: true } }),
       prisma.user.findMany({
         where,
         include: { driver: true },
@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json({
+      adminCity,
       stats: {
         users: usersCount,
         drivers: driversCount,

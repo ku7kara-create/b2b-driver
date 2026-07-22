@@ -99,6 +99,7 @@ model Trip {
   agreedPrice      Float?
   acceptedBidId    String?
   createdAt        DateTime  @default(now())
+  acceptedAt       DateTime?
   startedAt        DateTime?
   completedAt      DateTime?
 
@@ -146,6 +147,16 @@ model Review {
   trip     Trip @relation(fields: [tripId], references: [id])
   reviewer User @relation("Reviewer", fields: [reviewerId], references: [id])
   reviewee User @relation("Reviewee", fields: [revieweeId], references: [id])
+}
+
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  String   @default("web")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Message {

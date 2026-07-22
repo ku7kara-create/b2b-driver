@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/server/auth";
 import { prisma } from "@/lib/prisma";
+import { getIO } from "@/server/socket";
 
 export async function POST(
   request: NextRequest,
@@ -19,7 +20,10 @@ export async function POST(
       return NextResponse.json({ error: "معرف العرض مطلوب" }, { status: 400 });
     }
 
-    const trip = await prisma.trip.findUnique({ where: { id: paramId } });
+    const trip = await prisma.trip.findUnique({
+      where: { id: paramId },
+      include: { customer: { select: { city: true } } },
+    });
     if (!trip || trip.customerId !== (session.user as any).id) {
       return NextResponse.json({ error: "الرحلة غير موجودة" }, { status: 404 });
     }
@@ -38,9 +42,16 @@ export async function POST(
       prisma.bid.updateMany({ where: { tripId: paramId, id: { not: bidId } }, data: { status: "rejected" } }),
       prisma.trip.update({
         where: { id: paramId },
-        data: { status: "accepted", driverId: bid.driverId, agreedPrice: bid.price, acceptedBidId: bidId },
+        data: { status: "accepted", driverId: bid.driverId, agreedPrice: bid.price, acceptedBidId: bidId, acceptedAt: new Date() },
       }),
     ]);
+
+    const io = getIO();
+    if (io) {
+      const tripCity = (trip as any).customer?.city || "بني وليد";
+      io.to("drivers:available:" + tripCity).emit("bid:accepted_external", { tripId: paramId, driverId: bid.driverId });
+      io.to(`trip:${paramId}`).emit("bid:accepted", { tripId: paramId, driverId: bid.driverId });
+    }
 
     return NextResponse.json({ tripId: paramId, driverId: bid.driverId, success: true });
   } catch (error) {

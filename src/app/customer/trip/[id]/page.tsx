@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { Header } from "@/components/header";
 
 const TripMap = dynamic(() => import("@/components/trip-map"), { ssr: false });
 
@@ -84,10 +85,7 @@ export default function CustomerTripPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
-      <header className="bg-white sticky top-0 z-40 border-b border-gray-200 flex flex-row-reverse items-center px-4 h-16">
-        <Link href="/customer/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-        <h1 className="text-lg font-bold text-[#091426] mr-4">تتبع الرحلة</h1>
-      </header>
+      <Header title="تتبع الرحلة" backHref="/customer/dashboard" />
       {copied && <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white px-4 py-2 rounded-full text-sm">✓ تم نسخ {copied}</div>}
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">

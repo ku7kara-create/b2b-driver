@@ -67,14 +67,14 @@ export default function CustomerRegisterPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="w-full px-4 h-16 flex items-center justify-between bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
-        <Link href="/" className="p-2 rounded-full hover:bg-surface-variant transition-colors">
-          <span className="material-symbols-outlined text-primary">arrow_forward</span>
+      <header style={{ backgroundColor: "#FF8C00" }} className="w-full px-4 h-16 flex items-center justify-between sticky top-0 z-50">
+        <Link href="/" className="p-2 rounded-full hover:brightness-110 transition-all">
+          <span className="material-symbols-outlined" style={{ color: "white" }}>arrow_forward</span>
         </Link>
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-primary">B2B Driver</span>
+          <span className="text-xl font-bold" style={{ color: "white" }}>B2B Driver</span>
         </div>
-        <h1 className="text-lg font-semibold text-on-surface">إنشاء حساب عميل</h1>
+        <h1 className="text-lg font-semibold" style={{ color: "white" }}>إنشاء حساب عميل</h1>
       </header>
 
       <main className="flex-grow flex items-center justify-center py-8 px-4">

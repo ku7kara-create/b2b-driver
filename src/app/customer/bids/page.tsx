@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Header } from "@/components/header";
 
 export default function CustomerBidsListPage() {
   const [trips, setTrips] = useState<any[]>([]);
@@ -23,12 +24,7 @@ export default function CustomerBidsListPage() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <header className="sticky top-0 z-40 bg-surface border-b border-outline-variant flex flex-row-reverse items-center w-full px-4 h-16">
-        <Link href="/customer/dashboard" className="p-2 hover:bg-surface-container-low rounded-full">
-          <span className="material-symbols-outlined text-on-surface">arrow_forward</span>
-        </Link>
-        <h1 className="text-xl font-semibold text-on-surface mr-4">طلباتي</h1>
-      </header>
+      <Header title="طلباتي" backHref="/customer/dashboard" />
 
       <main className="max-w-3xl mx-auto p-4">
         {loading ? (
@@ -67,10 +63,12 @@ export default function CustomerBidsListPage() {
                   className={`px-3 py-1 rounded-full text-xs font-bold ${
                     trip.status === "accepted"
                       ? "bg-green-100 text-green-700"
-                      : "bg-yellow-100 text-yellow-700"
+                      : trip.status === "cancelled"
+                        ? "bg-gray-200 text-gray-600"
+                        : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
-                  {trip.status === "accepted" ? "نشط" : "معلق"}
+                  {trip.status === "accepted" ? "نشط" : trip.status === "cancelled" ? "ملغاة" : "معلق"}
                 </span>
               </Link>
             ))}

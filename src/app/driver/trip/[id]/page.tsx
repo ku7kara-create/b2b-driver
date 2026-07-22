@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Header } from "@/components/header";
 
 interface DriverTrip {
   id: string; serviceType: string;
@@ -79,10 +80,7 @@ export default function DriverTripPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
-      <header className="bg-white sticky top-0 z-40 border-b border-gray-200 flex flex-row-reverse items-center px-4 h-16">
-        <Link href="/driver/dashboard" className="p-2 hover:bg-gray-100 rounded-full"><span className="material-symbols-outlined">arrow_forward</span></Link>
-        <h1 className="text-lg font-bold text-[#091426] mr-4">الرحلة النشطة</h1>
-      </header>
+      <Header title="الرحلة النشطة" backHref="/driver/dashboard" />
 
       <main className="flex-grow p-4 max-w-lg mx-auto w-full space-y-4">
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">

@@ -9,7 +9,11 @@ export async function GET() {
     if (!session?.user) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     if ((session.user as any).role !== "admin") return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
 
+    const adminUser = await prisma.user.findUnique({ where: { id: (session.user as any).id } });
+    const adminCity = adminUser?.assignedCity || "بني وليد";
+
     const trips = await prisma.trip.findMany({
+      where: { customer: { city: adminCity } },
       include: {
         customer: { select: { name: true, phone: true } },
         driver: { include: { user: { select: { name: true } } } },

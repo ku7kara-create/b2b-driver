@@ -4,13 +4,17 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { io } from "socket.io-client";
 
 interface TripRequest {
   id: string; serviceType: string; pickupAddress: string; dropoffAddress: string;
   cargoDetails: string | null; status: string; createdAt: string;
+  gracePeriod?: boolean; acceptedAt?: string;
 }
 
 const SERVICE_LABELS: Record<string, string> = { car: "سيارة خاصة", porter: "بورتر", tow_truck: "ساحبة" };
+const SERVICE_ICONS: Record<string, string> = { car: "directions_car", private_car: "directions_car", porter: "local_shipping", porter_canter: "local_shipping", tow_truck: "precision_manufacturing" };
+function getServiceIcon(type: string) { return SERVICE_ICONS[type] || "directions_car"; }
 
 export default function DriverDashboardPage() {
   const router = useRouter();
@@ -37,6 +41,13 @@ export default function DriverDashboardPage() {
 
   useEffect(() => { fetchRequests().finally(() => setLoading(false)); }, [fetchRequests]);
 
+  useEffect(() => {
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5002";
+    const s = io(socketUrl, { transports: ["websocket", "polling"], forceNew: true });
+    s.on("bid:accepted_external", () => { fetchRequests(); });
+    return () => { s.disconnect(); };
+  }, [fetchRequests]);
+
   if (!session) return <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center"><Link href="/login" className="text-[#E05A2B] font-bold">تسجيل الدخول</Link></div>;
   if (!subscriptionActive) return (
     <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
@@ -46,13 +57,13 @@ export default function DriverDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F9]">
-      <header className="bg-white sticky top-0 z-50 border-b border-gray-200 flex flex-row-reverse justify-between items-center px-4 py-2">
+      <header style={{ backgroundColor: "#FF8C00" }} className="sticky top-0 z-50 flex flex-row-reverse justify-between items-center px-4 py-2">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-[#091426]">سائق لوجستي</h1>
+          <h1 className="text-xl font-bold" style={{ color: "white" }}>سائق لوجستي</h1>
         </div>
         <div className="relative">
-          <span className="material-symbols-outlined text-gray-500 p-2 cursor-pointer">notifications</span>
-          <span className="absolute top-2 right-2 w-2 h-2 bg-[#E05A2B] rounded-full border-2 border-white"></span>
+          <span className="material-symbols-outlined p-2 cursor-pointer" style={{ color: "white" }}>notifications</span>
+          <span className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full border-2" style={{ borderColor: "#FF8C00" }}></span>
         </div>
       </header>
 
@@ -61,7 +72,7 @@ export default function DriverDashboardPage() {
           <div className="bg-[#E05A2B] text-white p-4 rounded-xl flex items-center justify-between animate-pulse">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2 rounded-full">
-                <span className="material-symbols-outlined">local_shipping</span>
+                <span className="material-symbols-outlined">{getServiceIcon(requests[0]?.serviceType)}</span>
               </div>
               <div><p className="font-bold">طلب جديد متوفر بالقرب منك!</p><p className="text-xs opacity-90">{requests.length} طلبات في مدينتك</p></div>
             </div>
@@ -100,12 +111,12 @@ export default function DriverDashboardPage() {
          requests.length === 0 ? <div className="bg-white border border-gray-200 rounded-xl p-12 text-center text-gray-400">لا توجد طلبات قريبة</div> :
           <div className="space-y-3">
             {requests.map((t) => (
-              <div key={t.id} onClick={() => router.push(`/driver/bid/${t.id}`)} className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm cursor-pointer hover:border-[#E05A2B] transition-colors">
+              <div key={t.id} onClick={() => { if (!t.gracePeriod) router.push(`/driver/bid/${t.id}`); }} className={`bg-white border rounded-xl p-4 flex justify-between items-center shadow-sm transition-colors ${t.gracePeriod ? "border-red-200 bg-red-50/30 cursor-default" : "border-gray-200 cursor-pointer hover:border-[#E05A2B]"}`}>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center"><span className="material-symbols-outlined text-[#E05A2B]">{t.serviceType === "car" ? "directions_car" : "local_shipping"}</span></div>
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${t.gracePeriod ? "bg-red-100" : "bg-gray-100"}`}><span className={`material-symbols-outlined ${t.gracePeriod ? "text-red-400" : "text-[#E05A2B]"}`}>{getServiceIcon(t.serviceType)}</span></div>
                   <div><span className="font-bold text-sm">{SERVICE_LABELS[t.serviceType]}</span><p className="text-xs text-gray-500 truncate max-w-[150px]">{t.pickupAddress} → {t.dropoffAddress}</p></div>
                 </div>
-                <span className="material-symbols-outlined text-gray-300">chevron_left</span>
+                {t.gracePeriod ? <span className="text-xs text-red-500 bg-red-50 px-2 py-1 rounded-full font-bold whitespace-nowrap">تم قبول عرض آخر</span> : <span className="material-symbols-outlined text-gray-300">chevron_left</span>}
               </div>
             ))}
           </div>}

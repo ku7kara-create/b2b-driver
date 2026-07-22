@@ -24,7 +24,6 @@ export default function DriverRegisterPage() {
     phone: "",
     city: "بني وليد",
     gender: "ذكر",
-    idNumber: "",
     licenseType: "",
     vehicleType: "",
     password: "",
@@ -74,7 +73,6 @@ export default function DriverRegisterPage() {
           phone: `+218${form.phone}`,
           password: form.password,
           role: "driver",
-          idNumber: form.idNumber,
           licenseType: form.licenseType,
           vehicleType: form.vehicleType,
           city: form.city,
@@ -99,11 +97,11 @@ export default function DriverRegisterPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="w-full px-4 h-16 flex items-center justify-between bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
-        <Link href="/" className="p-2 rounded-full hover:bg-surface-variant transition-colors">
-          <span className="material-symbols-outlined text-primary">arrow_forward</span>
+      <header style={{ backgroundColor: "#FF8C00" }} className="w-full px-4 h-16 flex items-center justify-between sticky top-0 z-50">
+        <Link href="/" className="p-2 rounded-full hover:brightness-110 transition-all">
+          <span className="material-symbols-outlined" style={{ color: "white" }}>arrow_forward</span>
         </Link>
-        <span className="text-xl font-bold text-primary">B2B Driver</span>
+        <span className="text-xl font-bold" style={{ color: "white" }}>B2B Driver</span>
         <div className="w-10"></div>
       </header>
 
@@ -125,7 +123,9 @@ export default function DriverRegisterPage() {
             ></div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="p-8 space-y-6" autoComplete="off">
+            <input type="text" style={{ display: "none" }} tabIndex={-1} readOnly />
+            <input type="password" style={{ display: "none" }} tabIndex={-1} readOnly />
             {error && (
               <div className="bg-error-container text-on-error-container p-3 rounded-lg text-sm text-center">
                 {error}
@@ -168,6 +168,9 @@ export default function DriverRegisterPage() {
                   </span>
                   <input
                     type="tel"
+                    name="phoneNumber"
+                    autoComplete="off"
+                    data-lpignore="true"
                     placeholder="91XXXXXXXX"
                     className="w-full pr-10 pl-16 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base text-left focus:outline-none focus:border-secondary-container transition-all"
                     dir="ltr"
@@ -196,39 +199,19 @@ export default function DriverRegisterPage() {
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-on-surface-variant px-1">الجنس</label>
-              <div className="flex gap-4 py-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="gender" value="ذكر" checked={form.gender === "ذكر"} onChange={(e) => updateField("gender", e.target.value)} className="text-[#FF8C00]" />
+              <div className="flex gap-4">
+                <button type="button" onClick={() => updateField("gender", "ذكر")} className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer ${form.gender === "ذكر" ? "border-[#FF8C00] bg-orange-50 text-[#FF8C00] font-semibold" : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"}`}>
+                  <span className="material-symbols-outlined text-3xl">man</span>
                   <span className="text-sm">ذكر</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="gender" value="أنثى" checked={form.gender === "أنثى"} onChange={(e) => updateField("gender", e.target.value)} className="text-[#FF8C00]" />
+                </button>
+                <button type="button" onClick={() => updateField("gender", "أنثى")} className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer ${form.gender === "أنثى" ? "border-[#FF8C00] bg-orange-50 text-[#FF8C00] font-semibold" : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"}`}>
+                  <span className="material-symbols-outlined text-3xl">woman</span>
                   <span className="text-sm">أنثى</span>
-                </label>
+                </button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-on-surface-variant px-1">
-                  رقم الهوية
-                </label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline">
-                    badge
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="1XXXXXXXXX"
-                    className="w-full pr-10 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base focus:outline-none focus:border-secondary-container transition-all"
-                    dir="ltr"
-                    value={form.idNumber}
-                    onChange={(e) => updateField("idNumber", e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-on-surface-variant px-1">
                   نوع الرخصة

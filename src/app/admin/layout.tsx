@@ -28,8 +28,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Sidebar */}
       <aside className={`fixed md:sticky inset-y-0 right-0 z-40 w-64 bg-[#091426] text-white flex flex-col transition-transform md:translate-x-0 ${open ? "translate-x-0" : "translate-x-full"}`}>
-        <div className="h-16 flex items-center px-5 border-b border-white/10">
-          <span className="text-xl font-bold text-[#E05A2B]">B2B Driver</span>
+        <div style={{ backgroundColor: "#FF8C00" }} className="h-16 flex items-center px-5">
+          <span className="text-xl font-bold" style={{ color: "white" }}>B2B Driver</span>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {NAV.map((item) => (
